@@ -13,9 +13,15 @@
 // limitations under the License.
 
 import 'dart:io';
+import 'dart:developer' as developer;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'web_audio_cache.dart';
 
 final class Phrase {
   final int index;
@@ -23,21 +29,29 @@ final class Phrase {
 
   Phrase({required this.index, required this.text});
 
-  Future<bool> get isRecordingAvailableLocally =>
-      localRecordingPath.then((x) => File(x).existsSync());
+  Future<bool> get isRecordingAvailableLocally => kIsWeb
+      ? Future.value(WebAudioCache.getAudioUrl(index) != null)
+      : localRecordingPath.then((x) => File(x).existsSync());
 
-  Future<String> get localRecordingPath =>
-      getApplicationDocumentsDirectory().then(
-        (value) => '${value.path}/prompt$index.wav',
-      );
+  Future<String> get localRecordingPath => kIsWeb
+      ? Future.value(WebAudioCache.getAudioUrl(index) ?? '')
+      : getApplicationDocumentsDirectory().then(
+          (value) => '${value.path}/prompt$index.wav',
+        );
 
-  Future<String> get localTempPath => getApplicationDocumentsDirectory().then(
-        (value) => '${value.path}/prompt_temp_$index.wav',
-      );
+  Future<String> get localTempPath => kIsWeb
+      ? Future.value('')
+      : getApplicationDocumentsDirectory().then(
+          (value) => '${value.path}/prompt_temp_$index.wav',
+        );
 
   Future<void> downloadRecording() async {
+    if (kIsWeb) return;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     final storageRef = FirebaseStorage.instance.ref();
-    final audioRef = storageRef.child('data/$index/recording.wav');
+    final audioRef = uid == null
+        ? storageRef.child('data/$index/recording.wav')
+        : storageRef.child('users/$uid/data/$index/recording.wav');
     final localAudioFile = File(await localRecordingPath);
     final remoteData = await audioRef.getData();
     if (remoteData == null || remoteData.isEmpty) {
@@ -48,19 +62,78 @@ final class Phrase {
   }
 
   Future<void> uploadRecording() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     final storage = FirebaseStorage.instance;
     storage.setMaxUploadRetryTime(const Duration(seconds: 5));
     final storageRef = storage.ref();
-    final phraseRef = storageRef.child('data/$index/phrase.txt');
-    final audioRef = storageRef.child('data/$index/recording.wav');
-    final audioPath = await localRecordingPath;
-    final localAudioFile = File(audioPath);
-    if (!localAudioFile.existsSync()) {
-      throw FileSystemException('File doesn\'t exist', audioPath);
+    final phraseRef = uid == null
+        ? storageRef.child('data/$index/phrase.txt')
+        : storageRef.child('users/$uid/data/$index/phrase.txt');
+    final audioRef = uid == null
+        ? storageRef.child('data/$index/recording.wav')
+        : storageRef.child('users/$uid/data/$index/recording.wav');
+
+    final metadata = SettableMetadata(customMetadata: {
+      'uid': uid ?? 'anonymous',
+      'promptType': 'text',
+      'promptIndex': '$index',
+      'recordedAt': DateTime.now().toUtc().toIso8601String(),
+    });
+
+    if (kIsWeb) {
+      final blobUrl = WebAudioCache.getAudioUrl(index);
+      if (blobUrl == null) {
+        throw Exception('No recording found to upload');
+      }
+      final response = await http.get(Uri.parse(blobUrl));
+      await Future.wait([
+        phraseRef.putString(text),
+        audioRef.putData(response.bodyBytes, metadata),
+      ]);
+    } else {
+      final audioPath = await localRecordingPath;
+      final localAudioFile = File(audioPath);
+      if (!localAudioFile.existsSync()) {
+        throw FileSystemException('File doesn\'t exist', audioPath);
+      }
+      await Future.wait([
+        phraseRef.putString(text),
+        audioRef.putFile(
+          localAudioFile,
+          metadata,
+        ),
+      ]);
     }
-    await Future.wait([
-      phraseRef.putString(text),
-      audioRef.putFile(localAudioFile),
-    ]);
+
+    // Register for community validation (non-critical)
+    try {
+      await FirebaseFirestore.instance
+          .collection('recordings')
+          .doc('${uid ?? "anon"}_text_$index')
+          .set({
+        'ownerUid': uid ?? 'anonymous',
+        'promptText': text,
+        'promptType': 'text',
+        'promptIndex': index,
+        'recordingPath': uid == null
+            ? 'data/$index/recording.wav'
+            : 'users/$uid/data/$index/recording.wav',
+        'uploadedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      developer.log('Phrase: failed to register recording: $e');
+    }
+  }
+
+  /// Deletes only the LOCAL recording file so the user can re-record.
+  /// Cloud copies (Firebase Storage + Firestore) are intentionally preserved
+  /// as part of the dataset.
+  Future<void> deleteRecording() async {
+    if (kIsWeb) {
+      WebAudioCache.setAudioUrl(index, null);
+      return;
+    }
+    final localFile = File(await localRecordingPath);
+    if (localFile.existsSync()) await localFile.delete();
   }
 }

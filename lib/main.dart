@@ -18,17 +18,23 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'src/project_euphonia.dart';
+import 'src/repos/auth_repository.dart';
 import 'src/repos/audio_player.dart';
 import 'src/repos/audio_recorder.dart';
+import 'src/repos/image_prompts_repository.dart';
+import 'src/repos/onboarding_repository.dart';
 import 'src/repos/phrases_repository.dart';
 import 'src/repos/settings_repository.dart';
 import 'src/repos/uploader.dart';
+
+import 'src/repos/validation_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => PhrasesRepository()),
+    ChangeNotifierProvider(create: (context) => ImagePromptsRepository()),
     ChangeNotifierProxyProvider<PhrasesRepository, AudioRecorder>(
         create: (context) => AudioRecorder(),
         update: (context, phraseRepoChangeNotifier, audioRecorder) =>
@@ -41,5 +47,9 @@ void main() async {
             audioPlayer!..loadPhrase(phraseRepoChangeNotifier.currentPhrase)),
     ChangeNotifierProvider(create: (context) => Uploader()),
     ChangeNotifierProvider(create: (context) => SettingsRepository()),
+    ChangeNotifierProvider(create: (context) => OnboardingRepository()),
+    ChangeNotifierProvider(create: (context) => AuthRepository()),
+    ChangeNotifierProvider(create: (context) => ValidationRepository()),
+
   ], child: const ProjectEuphonia()));
 }

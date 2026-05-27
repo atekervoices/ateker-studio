@@ -15,6 +15,7 @@
 import 'package:flutter/material.dart';
 
 import '../generated/l10n/app_localizations.dart';
+import '../ui/core/themes/colors.dart';
 
 enum UploadStatus { notStarted, started, completed, interrupted }
 
@@ -84,8 +85,8 @@ class TranscribeModeView extends StatelessWidget {
                             .transcriptionEndpointDisplay(transcriptUrl)),
                     Visibility(
                       visible: _showUploadProgress,
-                      child:
-                          const CircularProgressIndicator(color: Colors.blue),
+                      child: const CircularProgressIndicator(
+                          color: AppColors.primary),
                     ),
                     Expanded(
                       flex: 1,
@@ -119,8 +120,10 @@ class TranscribeModeView extends StatelessWidget {
                 child: MaterialButton(
                   onPressed: record,
                   color: isRecording
-                      ? Colors.teal
-                      : (isRecorded ? Colors.lightBlueAccent : Colors.blue),
+                      ? AppColors.secondary
+                      : (isRecorded
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Theme.of(context).colorScheme.primary),
                   textColor: Colors.white,
                   disabledColor: Colors.grey,
                   shape: const RoundedRectangleBorder(

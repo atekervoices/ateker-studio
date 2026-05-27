@@ -1,36 +1,21 @@
-// Copyright 2025 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 import 'dart:io';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:record/record.dart' as ar;
+import 'package:path_provider/path_provider.dart';
 
 import 'phrase.dart';
+import '../models/image_phrase.dart';
+import 'web_audio_cache.dart';
 
 final class AudioRecorder extends ChangeNotifier {
-  Phrase? _phrase;
+  dynamic _phrase;
   final _recorder = ar.AudioRecorder();
   var _isRecording = false;
 
   bool get isRecording => _isRecording;
 
-  void updateAudioPathForPhrase(Phrase? phrase) {
-    if (phrase == null) {
-      return;
-    }
-    stop();
+  void updateAudioPathForPhrase(dynamic phrase) {
     _phrase = phrase;
   }
 
@@ -42,6 +27,19 @@ final class AudioRecorder extends ChangeNotifier {
     notifyListeners();
     _recorder.hasPermission().then((hasPermission) async {
       if (hasPermission) {
+        String? path;
+        if (kIsWeb) {
+          path = null;
+        } else {
+          if (_phrase is Phrase) {
+            path = await _phrase.localTempPath;
+          } else if (_phrase is ImagePhrase) {
+            path = await _phrase.localTempPath;
+          } else {
+            throw StateError('Unsupported phrase type');
+          }
+        }
+        
         _recorder.start(
           const ar.RecordConfig(
             encoder: ar.AudioEncoder.wav,
@@ -51,7 +49,7 @@ final class AudioRecorder extends ChangeNotifier {
             echoCancel: true,
             noiseSuppress: true,
           ),
-          path: await _phrase!.localTempPath,
+          path: path ?? '',
         );
       }
     });
@@ -59,11 +57,46 @@ final class AudioRecorder extends ChangeNotifier {
 
   Future<void> stop() async {
     if (isRecording) {
-      await _recorder.stop();
-      await File(await _phrase!.localTempPath)
-          .rename(await _phrase!.localRecordingPath);
+      final path = await _recorder.stop();
+      
+      if (kIsWeb) {
+        if (_phrase is Phrase) {
+          WebAudioCache.setAudioUrl(_phrase.index, path);
+        } else if (_phrase is ImagePhrase) {
+          WebAudioCache.setImageAudioUrl(_phrase.index, path);
+        }
+      } else {
+        // Check if temp file exists before renaming
+        final tempFile = File(await _getTempPath());
+        if (await tempFile.exists()) {
+          await tempFile.rename(await _getFinalPath());
+        }
+      }
+      
       _isRecording = false;
       notifyListeners();
+    }
+  }
+
+  Future<String> _getTempPath() async {
+    if (kIsWeb) return '';
+    if (_phrase is Phrase) {
+      return await (_phrase as Phrase).localTempPath;
+    } else if (_phrase is ImagePhrase) {
+      return await (_phrase as ImagePhrase).localTempPath;
+    } else {
+      throw StateError('Unsupported phrase type');
+    }
+  }
+
+  Future<String> _getFinalPath() async {
+    if (kIsWeb) return '';
+    if (_phrase is Phrase) {
+      return await (_phrase as Phrase).localRecordingPath;
+    } else if (_phrase is ImagePhrase) {
+      return await (_phrase as ImagePhrase).localRecordingPath;
+    } else {
+      throw StateError('Unsupported phrase type');
     }
   }
 }

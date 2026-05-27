@@ -1,0 +1,22 @@
+services:
+  admin-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENTRY_POINT: lib/admin_web_main.dart
+    container_name: ateker_admin_web
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  mobile-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENTRY_POINT: lib/main.dart
+    container_name: ateker_mobile_pwa
+    ports:
+      - "8081:80"
+    restart: unless-stopped

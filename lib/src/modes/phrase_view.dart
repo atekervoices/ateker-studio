@@ -13,8 +13,11 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../repos/phrase.dart';
+import '../repos/uploader.dart';
+import 'upload_status.dart';
 
 final class PhraseView extends StatelessWidget {
   final Phrase _phrase;
@@ -23,6 +26,8 @@ final class PhraseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final uploader = Provider.of<Uploader>(context, listen: true);
+    final uploadStatus = uploader.statusForPhrase(_phrase.index);
     return FutureBuilder<bool>(
         future: _phrase.isRecordingAvailableLocally,
         builder: (context, snapshot) {
@@ -45,20 +50,42 @@ final class PhraseView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            '${_phrase.index}',
-                            style: TextStyle(
-                                color: ColorScheme.of(context).outline),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              '${_phrase.index}',
+                              style: TextStyle(
+                                  color: ColorScheme.of(context).outline),
+                            ),
                           ),
+                        ),
+                        Icon(
+                          switch (uploadStatus) {
+                            UploadStatus.completed => Icons.cloud_done,
+                            UploadStatus.started => Icons.cloud_upload,
+                            UploadStatus.queued => Icons.cloud_queue,
+                            UploadStatus.interrupted => Icons.cloud_off,
+                            _ => Icons.cloud_upload,
+                          },
+                          color: switch (uploadStatus) {
+                            UploadStatus.completed => Colors.green,
+                            UploadStatus.interrupted => Colors.red,
+                            UploadStatus.started => Theme.of(context)
+                                .colorScheme
+                                .primary,
+                            UploadStatus.queued => Theme.of(context)
+                                .colorScheme
+                                .secondary,
+                            _ => Colors.transparent,
+                          },
                         ),
                         Container(
                           decoration: ShapeDecoration(
                             shape: const CircleBorder(),
                             color: !isRecordingAvailable
                                 ? Colors.transparent
-                                : Colors.blue,
+                                : Theme.of(context).colorScheme.primary,
                           ),
                           padding: const EdgeInsets.all(8),
                           child: Icon(
@@ -79,6 +106,8 @@ final class PhraseView extends StatelessWidget {
                                   ? ColorScheme.of(context).tertiary
                                   : ColorScheme.of(context).secondary),
                           textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 3,
                         ),
                       ),
                     ),

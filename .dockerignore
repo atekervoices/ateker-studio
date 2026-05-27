@@ -1,0 +1,35 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Flutter / Dart caches and builds
+.dart_tool
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache
+.pub
+build/
+
+# IDE configurations
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Unnecessary platform folders for web build
+android/
+ios/
+macos/
+windows/
+linux/
+
+# Local configuration files or temporary files
+*.log
+migrate_working_dir/
+training_colabs/
+api/
+firebase.json
+cors.json

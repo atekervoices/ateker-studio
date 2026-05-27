@@ -38,7 +38,7 @@ class SettingsView extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .labelLarge
-                  ?.copyWith(color: Colors.blue))),
+                  ?.copyWith(color: Theme.of(context).colorScheme.primary))),
       ListTile(
         title: Text(AppLocalizations.of(context)!.autoAdvanceSettingTitle,
             style: Theme.of(context).textTheme.headlineSmall),
@@ -56,7 +56,7 @@ class SettingsView extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .labelLarge
-                  ?.copyWith(color: Colors.blue))),
+                  ?.copyWith(color: Theme.of(context).colorScheme.primary))),
       ListTile(
           title: TextField(
         controller: transcriptionURLController,

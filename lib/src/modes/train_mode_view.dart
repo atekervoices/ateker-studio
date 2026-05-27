@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../repos/phrases_repository.dart';
 import '../repos/phrase.dart';
+import '../ui/core/themes/colors.dart';
 import 'upload_status.dart';
 
 class TrainModeView extends StatelessWidget {
@@ -52,95 +53,121 @@ class TrainModeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
-    var sideLength = width;
-    if (height < width) {
-      sideLength = height - 180;
-    }
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final isLandscape = width > height;
+
     return OrientationBuilder(builder: (context, orientation) {
-      final List<Widget> firstHalf = [
-        SizedBox(
-            width: orientation == Orientation.landscape
-                ? (width * 2 / 3) - 100
-                : sideLength,
-            height: sideLength,
-            child: PageView.builder(
-                key: pageStorageKey,
-                controller: controller,
-                itemBuilder: (context, index) {
-                  return PhraseView(phrase: phrases[index]);
-                },
-                itemCount: phrases.length,
-                onPageChanged: (index) =>
-                    Provider.of<PhrasesRepository>(context, listen: false)
-                        .jumpToPhrase(updatedPhraseIndex: index))),
-      ];
-      final List<Widget> secondHalf = [
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+      // ── Controls (nav + record) ─────────────────────────────────
+      final controls = Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Semantics(
-                label: AppLocalizations.of(context)!.previousPhraseButton,
-                hint: AppLocalizations.of(context)!.previousPhraseButtonHint,
-                child: IconButton.outlined(
-                  onPressed: previousPhrase,
-                  iconSize: 48,
-                  icon: const Icon(Icons.skip_previous),
-                )),
-            const SizedBox(width: 24),
-            Semantics(
-                label: AppLocalizations.of(context)!.playPhraseButton,
-                hint: AppLocalizations.of(context)!.playPhraseButtonHint,
-                child: IconButton.outlined(
-                  onPressed: play,
-                  iconSize: 48,
-                  icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                )),
-            const SizedBox(width: 24),
-            Semantics(
-                label: AppLocalizations.of(context)!.nextPhraseButton,
-                hint: AppLocalizations.of(context)!.nextPhraseButtonHint,
-                child: IconButton.outlined(
-                  onPressed: nextPhrase,
-                  iconSize: 48,
-                  icon: const Icon(Icons.skip_next),
-                )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Semantics(
+                    label: AppLocalizations.of(context)!.previousPhraseButton,
+                    hint: AppLocalizations.of(context)!.previousPhraseButtonHint,
+                    child: IconButton.outlined(
+                      onPressed: previousPhrase,
+                      iconSize: 36,
+                      icon: const Icon(Icons.skip_previous),
+                    )),
+                const SizedBox(width: 16),
+                Semantics(
+                    label: AppLocalizations.of(context)!.playPhraseButton,
+                    hint: AppLocalizations.of(context)!.playPhraseButtonHint,
+                    child: IconButton.outlined(
+                      onPressed: play,
+                      iconSize: 36,
+                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                    )),
+                const SizedBox(width: 16),
+                Semantics(
+                    label: AppLocalizations.of(context)!.nextPhraseButton,
+                    hint: AppLocalizations.of(context)!.nextPhraseButtonHint,
+                    child: IconButton.outlined(
+                      onPressed: nextPhrase,
+                      iconSize: 36,
+                      icon: const Icon(Icons.skip_next),
+                    )),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: record,
+                style: FilledButton.styleFrom(
+                  backgroundColor: isRecording
+                      ? AppColors.secondary
+                      : (isRecorded
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Theme.of(context).colorScheme.primary),
+                  disabledBackgroundColor: Colors.grey.shade300,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: const StadiumBorder(),
+                ),
+                icon: Icon(
+                  isRecording ? Icons.stop_rounded : Icons.mic_rounded,
+                  color: Colors.white,
+                ),
+                label: Text(
+                  isRecording
+                      ? AppLocalizations.of(context)!.stopRecordingButtonTitle
+                      : (isRecorded
+                          ? AppLocalizations.of(context)!.reRecordButtonTitle
+                          : AppLocalizations.of(context)!.recordButtonTitle),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 40),
-        MaterialButton(
-          onPressed: record,
-          color: isRecording
-              ? Colors.teal
-              : (isRecorded ? Colors.lightBlueAccent : Colors.blue),
-          textColor: Colors.white,
-          disabledColor: Colors.grey,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(80)),
+      );
+
+      // ── PageView ────────────────────────────────────────────────
+      final pageView = PageView.builder(
+        key: pageStorageKey,
+        controller: controller,
+        itemBuilder: (context, index) => PhraseView(phrase: phrases[index]),
+        itemCount: phrases.length,
+        onPageChanged: (index) =>
+            Provider.of<PhrasesRepository>(context, listen: false)
+                .jumpToPhrase(updatedPhraseIndex: index),
+      );
+
+      if (isLandscape) {
+        return Row(children: [
+          SizedBox(
+            width: (width * 2 / 3) - 100,
+            child: pageView,
           ),
-          padding: const EdgeInsets.fromLTRB(80, 24, 80, 24),
-          child: Text(
-            isRecording
-                ? AppLocalizations.of(context)!.stopRecordingButtonTitle
-                : (isRecorded
-                    ? AppLocalizations.of(context)!.reRecordButtonTitle
-                    : AppLocalizations.of(context)!.recordButtonTitle),
-            style: const TextStyle(fontSize: 24),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [controls],
+              ),
+            ),
           ),
-        )
-      ];
-      return orientation == Orientation.portrait
-          ? Column(children: firstHalf + secondHalf)
-          : Row(children: [
-              Column(children: firstHalf),
-              Expanded(
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 8),
-                      child: Column(children: secondHalf)))
-            ]);
+        ]);
+      }
+
+      // Portrait: phrase card expands to fill available space
+      return Column(
+        children: [
+          Expanded(child: pageView),
+          controls,
+        ],
+      );
     });
   }
 }

@@ -15,8 +15,8 @@
 import 'package:flutter/material.dart';
 
 import 'generated/l10n/app_localizations.dart';
-import 'home.dart';
 import 'ui/core/themes/colors.dart';
+import 'ui/splash/splash_screen.dart';
 
 class ProjectEuphonia extends StatelessWidget {
   const ProjectEuphonia({super.key});
@@ -33,6 +33,6 @@ class ProjectEuphonia extends StatelessWidget {
                 backgroundColor: Colors.grey.shade900)),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const HomeController());
+        home: const SplashScreen());
   }
 }

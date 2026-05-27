@@ -14,6 +14,7 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -25,18 +26,20 @@ final class AudioPlayer extends ChangeNotifier {
   bool _isPlaying = false;
 
   bool get isPlaying => _isPlaying;
-  bool get canPlay => _audioPath != null && File(_audioPath!).existsSync();
+  bool get canPlay => _audioPath != null && (kIsWeb || File(_audioPath!).existsSync());
 
-  void loadPhrase(Phrase? phrase) {
+  Future<void> loadPhrase(Phrase? phrase) async {
     if (phrase == null) {
       return;
     }
-    phrase.localRecordingPath.then((audioPath) {
-      load(audioPath: audioPath);
-    });
+    final audioPath = await phrase.localRecordingPath;
+    await load(audioPath: audioPath);
   }
 
-  void load({required String? audioPath}) async {
+  Future<void> load({required String? audioPath}) async {
+    if (_audioPath == audioPath && _playerController != null) {
+      return;
+    }
     _playerController?.pause();
     _audioPath = audioPath;
     if (!canPlay) {
@@ -50,7 +53,11 @@ final class AudioPlayer extends ChangeNotifier {
   }
 
   Future<void> _updatePath() async {
-    _playerController = VideoPlayerController.file(File(_audioPath!));
+    if (kIsWeb) {
+      _playerController = VideoPlayerController.networkUrl(Uri.parse(_audioPath!));
+    } else {
+      _playerController = VideoPlayerController.file(File(_audioPath!));
+    }
     await _playerController?.initialize();
     _playerController?.addListener(() {
       var newValue = _playerController?.value.isPlaying ?? false;

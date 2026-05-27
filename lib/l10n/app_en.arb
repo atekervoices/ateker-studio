@@ -1,10 +1,10 @@
 {
-    "appTitle": "Project Euphonia",
+    "appTitle": "Ateker Voices",
     "@appTitle": {
         "description": "Title of the app displayed in AppBar & Navigation Drawer"
     },
 
-    "trainModeTitle": "Train",
+    "trainModeTitle": "Record",
     "@trainModeTitle": {
         "description": "Title for bottom navigation Train mode item"
     },
@@ -113,5 +113,145 @@
     "autoAdvanceSettingSubtitle": "Move to next phrase automatically after you finish recording the current phrase",
     "@autoAdvanceSettingSubtitle": {
         "description": "Subtitle to auto advance phrase setting"
+    },
+
+    "progressModeTitle": "Progress",
+    "@progressModeTitle": {
+        "description": "Title for bottom navigation Progress tab"
+    },
+
+    "progressTitle": "Collection Progress",
+    "@progressTitle": {
+        "description": "Title on the Progress page"
+    },
+
+    "recordedLabel": "Recorded",
+    "@recordedLabel": {
+        "description": "Label for recorded count on Progress page"
+    },
+
+    "uploadedLabel": "Uploaded",
+    "@uploadedLabel": {
+        "description": "Label for uploaded count on Progress page"
+    },
+
+    "queuedLabel": "Queued",
+    "@queuedLabel": {
+        "description": "Label for queued count on Progress page"
+    },
+
+    "phraseStatusTitle": "Phrase Status",
+    "@phraseStatusTitle": {
+        "description": "Title for phrase status list on Progress page"
+    },
+
+    "statusUploaded": "Uploaded",
+    "@statusUploaded": {
+        "description": "Upload status: successfully uploaded"
+    },
+
+    "statusUploading": "Uploading",
+    "@statusUploading": {
+        "description": "Upload status: currently uploading"
+    },
+
+    "statusQueued": "Queued",
+    "@statusQueued": {
+        "description": "Upload status: waiting in queue"
+    },
+
+    "statusFailed": "Failed",
+    "@statusFailed": {
+        "description": "Upload status: upload failed"
+    },
+
+    "statusRecorded": "Recorded",
+    "@statusRecorded": {
+        "description": "Phrase status: recorded but not yet uploaded"
+    },
+
+    "statusNotRecorded": "Not recorded",
+    "@statusNotRecorded": {
+        "description": "Phrase status: not yet recorded"
+    },
+
+    "onboardingAgeTitle": "How old are you?",
+    "@onboardingAgeTitle": {
+        "description": "Title for age selection step in onboarding"
+    },
+
+    "onboardingAgeSubtitle": "This helps us understand voice patterns across age groups",
+    "@onboardingAgeSubtitle": {
+        "description": "Subtitle for age selection step in onboarding"
+    },
+
+    "onboardingGenderTitle": "What is your gender?",
+    "@onboardingGenderTitle": {
+        "description": "Title for gender selection step in onboarding"
+    },
+
+    "onboardingGenderSubtitle": "This helps us build diverse voice models",
+    "@onboardingGenderSubtitle": {
+        "description": "Subtitle for gender selection step in onboarding"
+    },
+
+    "onboardingDialectTitle": "What dialect do you speak?",
+    "@onboardingDialectTitle": {
+        "description": "Title for dialect selection step in onboarding"
+    },
+
+    "onboardingDialectSubtitle": "This helps us train models for your specific dialect",
+    "@onboardingDialectSubtitle": {
+        "description": "Subtitle for dialect selection step in onboarding"
+    },
+
+    "onboardingLanguageTitle": "What language do you speak?",
+    "@onboardingLanguageTitle": {
+        "description": "Title for language selection step in onboarding"
+    },
+
+    "onboardingLanguageSubtitle": "This helps us collect and digitise your language",
+    "@onboardingLanguageSubtitle": {
+        "description": "Subtitle for language selection step in onboarding"
+    },
+
+    "onboardingNext": "Next",
+    "@onboardingNext": {
+        "description": "Next button in onboarding"
+    },
+
+    "onboardingBack": "Back",
+    "@onboardingBack": {
+        "description": "Back button in onboarding"
+    },
+
+    "onboardingGetStarted": "Get Started",
+    "@onboardingGetStarted": {
+        "description": "Get Started button to complete onboarding"
+    },
+
+    "authTitle": "Welcome Back",
+    "@authTitle": {
+        "description": "Title for authentication screen"
+    },
+
+    "authEmail": "Email",
+    "@authEmail": {
+        "description": "Email field label in auth"
+    },
+
+    "authPassword": "Password",
+    "@authPassword": {
+        "description": "Password field label in auth"
+    },
+
+    "authSignIn": "Sign In",
+    "@authSignIn": {
+        "description": "Sign In button text"
+    },
+
+    "authSignInWithGoogle": "Continue with Google",
+    "@authSignInWithGoogle": {
+        "description": "Google Sign-In button text"
     }
 }

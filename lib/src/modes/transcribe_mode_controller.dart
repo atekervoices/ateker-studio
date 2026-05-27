@@ -17,6 +17,7 @@ import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -64,8 +65,10 @@ class _TranscribeModeControllerState extends State<TranscribeModeController> {
     }
   }
 
+  String? _webBlobUrl;
+
   Future<String> _getRecordingPath() {
-    return getApplicationDocumentsDirectory().then(
+    return kIsWeb ? Future.value('') : getApplicationDocumentsDirectory().then(
       (value) => '${value.path}/recording.wav',
     );
   }
@@ -89,6 +92,16 @@ class _TranscribeModeControllerState extends State<TranscribeModeController> {
 
   Future<void> _preparePlayerForFile({required File audioFile}) async {
     _playerController = VideoPlayerController.file(audioFile);
+    _playerController.initialize().then((_) {});
+    _playerController.addListener(() {
+      setState(() {
+        _isPlaying = _playerController.value.isPlaying;
+      });
+    });
+  }
+
+  Future<void> _preparePlayerForUrl({required String url}) async {
+    _playerController = VideoPlayerController.networkUrl(Uri.parse(url));
     _playerController.initialize().then((_) {});
     _playerController.addListener(() {
       setState(() {
@@ -136,6 +149,46 @@ class _TranscribeModeControllerState extends State<TranscribeModeController> {
     }
   }
 
+  Future<void> _transcribeWeb({required String url}) async {
+    setState(() {
+      _uploadStatus = UploadStatus.started;
+    });
+    try {
+      var transcribeEndpoint =
+          Provider.of<SettingsRepository>(context, listen: false)
+              .transcribeEndpoint;
+      if (transcribeEndpoint.isEmpty) {
+        return;
+      }
+      final uri = Uri.parse('$transcribeEndpoint/transcribe');
+      var request = http.MultipartRequest('POST', uri);
+      final responseBytes = await http.get(Uri.parse(url));
+      request.files.add(
+        http.MultipartFile.fromBytes('wav', responseBytes.bodyBytes, filename: 'recording.wav'),
+      );
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+      final result = jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200) {
+        setState(() {
+          _phrase = result['transcript'] ?? 'ERROR: TRANSCRIPT NOT FOUND!';
+          _uploadStatus = UploadStatus.completed;
+        });
+      } else {
+        setState(() {
+          _phrase = 'ERROR: SOMETHING WENT WRONG (${response.statusCode})!';
+          _uploadStatus = UploadStatus.completed;
+        });
+      }
+    } on http.ClientException catch (error) {
+      developer.log(error.message);
+      setState(() {
+        _phrase = 'ERROR: ${error.message}';
+        _uploadStatus = UploadStatus.interrupted;
+      });
+    }
+  }
+
   void _playRecording() async {
     if (_isPlaying) {
       _playerController.pause();
@@ -151,6 +204,12 @@ class _TranscribeModeControllerState extends State<TranscribeModeController> {
   }
 
   Future<bool> _checkIfRecordingFileIsAvailable() async {
+    if (kIsWeb) {
+      setState(() {
+        _canPlay = _webBlobUrl != null;
+      });
+      return _canPlay;
+    }
     var recordingFile = File(await _getRecordingPath());
     setState(() {
       _canPlay = recordingFile.existsSync();
@@ -159,17 +218,25 @@ class _TranscribeModeControllerState extends State<TranscribeModeController> {
   }
 
   Future<void> _stopRecording() async {
-    var _ = await record.stop();
-    Future.wait([_checkIfRecordingFileIsAvailable(), _getRecordingPath()]).then(
-      (results) {
-        final bool fileExists = results[0] as bool;
-        final String filePath = results[1] as String;
-        if (fileExists) {
-          _preparePlayerForFile(audioFile: File(filePath));
-          _transcribe(audioFile: File(filePath));
-        }
-      },
-    );
+    var path = await record.stop();
+    if (kIsWeb) {
+      _webBlobUrl = path;
+      if (_webBlobUrl != null) {
+        _preparePlayerForUrl(url: _webBlobUrl!);
+        _transcribeWeb(url: _webBlobUrl!);
+      }
+    } else {
+      Future.wait([_checkIfRecordingFileIsAvailable(), _getRecordingPath()]).then(
+        (results) {
+          final bool fileExists = results[0] as bool;
+          final String filePath = results[1] as String;
+          if (fileExists) {
+            _preparePlayerForFile(audioFile: File(filePath));
+            _transcribe(audioFile: File(filePath));
+          }
+        },
+      );
+    }
   }
 
   @override

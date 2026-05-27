@@ -22,6 +22,10 @@ abstract final class AppColors {
   static var grey900 = Colors.grey.shade900;
   static const grey2 = Color(0xFF4D4D4D);
   static const grey3 = Color(0xFFA4A4A4);
+
+  static const primary = Color(0xFFD06E1A);
+  static const secondary = Color(0xFF08505A);
+  static const tertiary = Color(0xFF6B2A05);
   static const whiteTransparent = Color(
     0x4DFFFFFF,
   ); // Figma rgba(255, 255, 255, 0.3)
@@ -33,11 +37,11 @@ abstract final class AppColors {
 
   static const lightColorScheme = ColorScheme(
     brightness: Brightness.light,
-    primary: AppColors.black1,
+    primary: AppColors.primary,
     onPrimary: AppColors.white1,
-    secondary: AppColors.black1,
-    onSecondary: AppColors.greylight,
-    tertiary: AppColors.black1,
+    secondary: AppColors.secondary,
+    onSecondary: AppColors.white1,
+    tertiary: AppColors.tertiary,
     onTertiary: AppColors.blueCardColor,
     surface: Colors.white,
     onSurface: AppColors.black1,
@@ -46,13 +50,13 @@ abstract final class AppColors {
     outline: Colors.blueGrey,
   );
 
-  static var darkColorScheme = ColorScheme(
+  static const darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
-    primary: AppColors.white1,
-    onPrimary: AppColors.black1,
-    secondary: AppColors.white1,
-    onSecondary: AppColors.grey900,
-    tertiary: AppColors.black1,
+    primary: AppColors.primary,
+    onPrimary: AppColors.white1,
+    secondary: AppColors.secondary,
+    onSecondary: AppColors.white1,
+    tertiary: AppColors.tertiary,
     onTertiary: AppColors.blueCardColor,
     surface: AppColors.black1,
     onSurface: Colors.white,
