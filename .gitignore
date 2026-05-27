@@ -52,7 +52,7 @@ app.*.map.json
 /android/app/google-services.json
 # /firebase.json
 /ios/Runner/GoogleService-Info.plist
-/lib/firebase_options.dart
+# /lib/firebase_options.dart
 /macos/Runner/GoogleService-Info.plist
 
 # Generated
