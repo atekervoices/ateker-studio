@@ -131,7 +131,7 @@ class AdminSidebar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            color: Color(0xFF64748B), fontSize: 11),
+                            color: Colors.white, fontSize: 11),
                       ),
                     ),
                   ],
@@ -194,7 +194,7 @@ class _AdminSideNavItemState extends State<AdminSideNavItem> {
                   size: 18,
                   color: widget.selected
                       ? const Color(0xFFD06E1A)
-                      : const Color(0xFF94A3B8),
+                      : Colors.white,
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -202,7 +202,7 @@ class _AdminSideNavItemState extends State<AdminSideNavItem> {
                   style: TextStyle(
                     color: widget.selected
                         ? const Color(0xFFD06E1A)
-                        : const Color(0xFFCBD5E1),
+                        : Colors.white,
                     fontSize: 14,
                     fontWeight: widget.selected
                         ? FontWeight.w600

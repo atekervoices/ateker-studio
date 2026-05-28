@@ -18,8 +18,8 @@ import 'generated/l10n/app_localizations.dart';
 import 'ui/core/themes/colors.dart';
 import 'ui/splash/splash_screen.dart';
 
-class ProjectEuphonia extends StatelessWidget {
-  const ProjectEuphonia({super.key});
+class AtekerVoicesApp extends StatelessWidget {
+  const AtekerVoicesApp({super.key});
 
   @override
   Widget build(BuildContext context) {

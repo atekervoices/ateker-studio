@@ -162,7 +162,7 @@ class _AdminLoginPageState extends State<AdminLoginPage>
                               const Text(
                                 'Email',
                                 style: TextStyle(
-                                  color: Color(0xFF64748B),
+                                  color: Colors.black,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -176,7 +176,7 @@ class _AdminLoginPageState extends State<AdminLoginPage>
                                   hintText: 'Email',
                                   prefixIcon: Icon(
                                     Icons.email_outlined,
-                                    color: Color(0xFF94A3B8),
+                                    color: Colors.black,
                                     size: 20,
                                   ),
                                 ),
@@ -196,7 +196,7 @@ class _AdminLoginPageState extends State<AdminLoginPage>
                               const Text(
                                 'Password',
                                 style: TextStyle(
-                                  color: Color(0xFF64748B),
+                                  color: Colors.black,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -210,7 +210,7 @@ class _AdminLoginPageState extends State<AdminLoginPage>
                                   hintText: 'Password',
                                   prefixIcon: const Icon(
                                     Icons.lock_outline,
-                                    color: Color(0xFF94A3B8),
+                                    color: Colors.black,
                                     size: 20,
                                   ),
                                   suffixIcon: IconButton(
@@ -223,7 +223,7 @@ class _AdminLoginPageState extends State<AdminLoginPage>
                                       _obscurePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
-                                      color: const Color(0xFF94A3B8),
+                                      color: Colors.black,
                                       size: 20,
                                     ),
                                   ),

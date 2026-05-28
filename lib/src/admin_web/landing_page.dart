@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../repos/admin_auth_service.dart';
 import '../repos/admin_gallery_repository.dart';
-import 'admin_login_page.dart';
 import 'dashboard_page.dart';
+import 'web_components.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -53,56 +53,14 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width <= 800;
     const atekerOrange = Color(0xFFD06E1A);
     const darkSlate = Color(0xFF1E293B);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ateker Voices'),
-        backgroundColor: Colors.white.withValues(alpha: 0.9),
-        elevation: 0,
-        centerTitle: false,
-        actions: [
-          Consumer<AdminAuthService>(
-            builder: (context, auth, _) {
-              if (auth.isLoggedIn) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      auth.user?.email ?? '',
-                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: () async {
-                        await auth.signOut();
-                      },
-                      icon: const Icon(Icons.logout, size: 20),
-                      tooltip: 'Sign Out',
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                );
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AdminLoginPage.routeName);
-                    },
-                    icon: const Icon(Icons.login, size: 18),
-                    label: const Text('Admin Login'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: atekerOrange,
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      ),
+      appBar: const WebNavBar(currentRoute: '/'),
+      drawer: const WebDrawer(currentRoute: '/'),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -113,7 +71,10 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                 position: _heroSlide,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 24),
+                  padding: EdgeInsets.symmetric(
+                    vertical: isMobile ? 60 : 120,
+                    horizontal: 24,
+                  ),
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -126,29 +87,38 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                       constraints: const BoxConstraints(maxWidth: 1000),
                       child: Column(
                         children: [
-                          _AnimatedLogo(atekerOrange: atekerOrange),
-                          const SizedBox(height: 40),
+                          _AnimatedLogo(
+                            atekerOrange: atekerOrange,
+                            size: isMobile ? 100 : 140,
+                          ),
+                          SizedBox(height: isMobile ? 24 : 40),
                           Text(
-                            'Preserving Our Heritage,\nOne Voice at a Time',
+                            'Preserving Our Heritage, One Voice at a Time',
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.displayMedium?.copyWith(
+                            style: (isMobile
+                                    ? theme.textTheme.headlineMedium
+                                    : theme.textTheme.displayMedium)
+                                ?.copyWith(
                               fontWeight: FontWeight.w900,
                               color: darkSlate,
-                              letterSpacing: -1.5,
+                              letterSpacing: isMobile ? -0.5 : -1.5,
                               height: 1.1,
                             ),
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            'Building the world\'s first high-quality speech datasets\nfor Ateker languages using advanced AI technology.',
+                            'Building the world\'s first high-quality speech datasets for Ateker languages using advanced AI technology.',
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              color: const Color(0xFF64748B),
+                            style: (isMobile
+                                    ? theme.textTheme.titleMedium
+                                    : theme.textTheme.headlineSmall)
+                                ?.copyWith(
+                              color: Colors.black,
                               fontWeight: FontWeight.w400,
                               height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 56),
+                          SizedBox(height: isMobile ? 36 : 56),
                           Consumer<AdminAuthService>(
                             builder: (context, auth, _) {
                               if (auth.isLoggedIn) {
@@ -159,7 +129,10 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                                   icon: const Icon(Icons.dashboard_rounded),
                                   label: const Text('Access Admin Dashboard'),
                                   style: FilledButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isMobile ? 24 : 32,
+                                      vertical: isMobile ? 16 : 20,
+                                    ),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   ),
                                 );
@@ -178,22 +151,37 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
             // ── Stats Strip ──
             Container(
               color: const Color(0xFF0F172A),
-              padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+              padding: EdgeInsets.symmetric(
+                vertical: isMobile ? 40 : 48,
+                horizontal: 24,
+              ),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 900),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _StatBadge(value: '500+', label: 'Recordings Collected'),
-                      _StatDivider(),
-                      _StatBadge(value: '12', label: 'Active Contributors'),
-                      _StatDivider(),
-                      _StatBadge(value: '3', label: 'Languages Supported'),
-                      _StatDivider(),
-                      _StatBadge(value: '99%', label: 'Upload Success Rate'),
-                    ],
-                  ),
+                  child: isMobile
+                      ? Wrap(
+                          spacing: 24,
+                          runSpacing: 24,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            _StatBadge(value: '500+', label: 'Recordings Collected'),
+                            _StatBadge(value: '12', label: 'Active Contributors'),
+                            _StatBadge(value: '3', label: 'Languages Supported'),
+                            _StatBadge(value: '99%', label: 'Upload Success Rate'),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _StatBadge(value: '500+', label: 'Recordings Collected'),
+                            _StatDivider(),
+                            _StatBadge(value: '12', label: 'Active Contributors'),
+                            _StatDivider(),
+                            _StatBadge(value: '3', label: 'Languages Supported'),
+                            _StatDivider(),
+                            _StatBadge(value: '99%', label: 'Upload Success Rate'),
+                          ],
+                        ),
                 ),
               ),
             ),
@@ -202,6 +190,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
             _SectionWrapper(
               title: 'Community & Culture',
               subtitle: 'The faces and traditions that drive the Ateker Voices initiative.',
+              isMobile: isMobile,
               child: Consumer<AdminGalleryRepository>(
                 builder: (context, repo, _) {
                   if (repo.isLoading && repo.images.isEmpty) {
@@ -220,18 +209,25 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: const Center(
-                        child: Text('Gallery images will appear here soon.', style: TextStyle(color: Color(0xFF94A3B8))),
+                        child: Text('Gallery images will appear here soon.', style: TextStyle(color: Colors.black)),
                       ),
                     );
+                  }
+
+                  int crossAxisCount = 3;
+                  if (width <= 500) {
+                    crossAxisCount = 1;
+                  } else if (width <= 850) {
+                    crossAxisCount = 2;
                   }
 
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 24,
-                      mainAxisSpacing: 24,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: isMobile ? 16 : 24,
+                      mainAxisSpacing: isMobile ? 16 : 24,
                       childAspectRatio: 0.8,
                     ),
                     itemCount: repo.images.length > 8 ? 8 : repo.images.length,
@@ -247,42 +243,17 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
             _SectionWrapper(
               title: 'Why It Matters',
               subtitle: 'Leveraging technology to protect linguistic diversity.',
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _FeatureCard(
-                      icon: Icons.language_rounded,
-                      title: 'Linguistic Pride',
-                      description: 'Ensuring that Ateker languages are represented in the digital landscape for future generations.',
-                      delay: 0,
-                    ),
-                  ),
-                  const SizedBox(width: 32),
-                  Expanded(
-                    child: _FeatureCard(
-                      icon: Icons.auto_awesome_rounded,
-                      title: 'AI Innovation',
-                      description: 'Training cutting-edge voice models that understand local accents and speech patterns perfectly.',
-                      delay: 200,
-                    ),
-                  ),
-                  const SizedBox(width: 32),
-                  Expanded(
-                    child: _FeatureCard(
-                      icon: Icons.people_alt_rounded,
-                      title: 'Local Impact',
-                      description: 'Creating tools that help people communicate, learn, and access information in their mother tongue.',
-                      delay: 400,
-                    ),
-                  ),
-                ],
-              ),
+              isMobile: isMobile,
+              child: _buildFeaturesList(isMobile),
             ),
 
             // ── How It Works ──
             Container(
               color: const Color(0xFFF8FAFC),
-              padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 24),
+              padding: EdgeInsets.symmetric(
+                vertical: isMobile ? 60 : 100,
+                horizontal: 24,
+              ),
               width: double.infinity,
               child: Center(
                 child: ConstrainedBox(
@@ -291,27 +262,25 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
                     children: [
                       Text(
                         'How It Works',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: (isMobile
+                                ? theme.textTheme.headlineSmall
+                                : theme.textTheme.headlineMedium)
+                            ?.copyWith(
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF1E293B),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Three simple steps to contribute your voice to the dataset.',
-                        style: TextStyle(color: Color(0xFF64748B), fontSize: 16),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: isMobile ? 14 : 16,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 64),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: _StepCard(step: '01', title: 'Sign Up', description: 'Create your account on the Ateker Voices mobile app in under 2 minutes.')),
-                          const SizedBox(width: 32),
-                          Expanded(child: _StepCard(step: '02', title: 'Record', description: 'Read speech prompts and describe images using your natural voice.')),
-                          const SizedBox(width: 32),
-                          Expanded(child: _StepCard(step: '03', title: 'Validate', description: 'Help verify other contributors\' recordings to improve dataset quality.')),
-                        ],
-                      ),
+                      SizedBox(height: isMobile ? 40 : 64),
+                      _buildStepsList(isMobile),
                     ],
                   ),
                 ),
@@ -319,43 +288,105 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
             ),
 
             // ── Footer ──
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 80),
-              color: const Color(0xFF0F172A),
-              width: double.infinity,
-              child: Column(
-                children: [
-                  Image.asset('assets/images/atekervoices-logo.png', width: 60, height: 60),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Ateker Voices Initiative',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Empowering languages through technology.',
-                    style: TextStyle(color: Colors.white54, fontSize: 14),
-                  ),
-                  const SizedBox(height: 48),
-                  const Divider(color: Colors.white10, indent: 100, endIndent: 100),
-                  const SizedBox(height: 32),
-                  Text(
-                    '© ${DateTime.now().year} Ateker Voices Initiative. Part of Project Euphonia.',
-                    style: const TextStyle(color: Colors.white24, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
+            const WebFooter(),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildFeaturesList(bool isMobile) {
+    final features = [
+      const _FeatureCard(
+        icon: Icons.language_rounded,
+        title: 'Linguistic Pride',
+        description: 'Ensuring that Ateker languages are represented in the digital landscape for future generations.',
+      ),
+      const _FeatureCard(
+        icon: Icons.auto_awesome_rounded,
+        title: 'AI Innovation',
+        description: 'Training cutting-edge voice models that understand local accents and speech patterns perfectly.',
+      ),
+      const _FeatureCard(
+        icon: Icons.people_alt_rounded,
+        title: 'Local Impact',
+        description: 'Creating tools that help people communicate, learn, and access information in their mother tongue.',
+      ),
+    ];
+
+    if (isMobile) {
+      return Column(
+        children: [
+          features[0],
+          const SizedBox(height: 20),
+          features[1],
+          const SizedBox(height: 20),
+          features[2],
+        ],
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: features[0]),
+          const SizedBox(width: 32),
+          Expanded(child: features[1]),
+          const SizedBox(width: 32),
+          Expanded(child: features[2]),
+        ],
+      );
+    }
+  }
+
+  Widget _buildStepsList(bool isMobile) {
+    final steps = [
+      const _StepCard(
+        step: '01',
+        title: 'Sign Up',
+        description: 'Create your account on the Ateker Voices mobile app in under 2 minutes.',
+      ),
+      const _StepCard(
+        step: '02',
+        title: 'Record',
+        description: 'Read speech prompts and describe images using your natural voice.',
+      ),
+      const _StepCard(
+        step: '03',
+        title: 'Validate',
+        description: 'Help verify other contributors\' recordings to improve dataset quality.',
+      ),
+    ];
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          steps[0],
+          const SizedBox(height: 32),
+          steps[1],
+          const SizedBox(height: 32),
+          steps[2],
+        ],
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: steps[0]),
+          const SizedBox(width: 32),
+          Expanded(child: steps[1]),
+          const SizedBox(width: 32),
+          Expanded(child: steps[2]),
+        ],
+      );
+    }
+  }
 }
 
 class _AnimatedLogo extends StatefulWidget {
   final Color atekerOrange;
-  const _AnimatedLogo({required this.atekerOrange});
+  final double size;
+  const _AnimatedLogo({required this.atekerOrange, required this.size});
 
   @override
   State<_AnimatedLogo> createState() => _AnimatedLogoState();
@@ -385,13 +416,13 @@ class _AnimatedLogoState extends State<_AnimatedLogo> with SingleTickerProviderS
       animation: _controller,
       builder: (context, child) {
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(widget.size * 0.15),
           decoration: BoxDecoration(
-            color: widget.atekerOrange.withValues(alpha: 0.1),
+            color: widget.atekerOrange.withAlpha(25),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: widget.atekerOrange.withValues(alpha: 0.2 * _controller.value),
+                color: widget.atekerOrange.withAlpha((50 * _controller.value).toInt()),
                 blurRadius: 40 * _controller.value,
                 spreadRadius: 10 * _controller.value,
               )
@@ -402,8 +433,8 @@ class _AnimatedLogoState extends State<_AnimatedLogo> with SingleTickerProviderS
       },
       child: Image.asset(
         'assets/images/atekervoices-logo.png',
-        width: 140,
-        height: 140,
+        width: widget.size,
+        height: widget.size,
       ),
     );
   }
@@ -413,34 +444,47 @@ class _SectionWrapper extends StatelessWidget {
   final String title;
   final String subtitle;
   final Widget child;
+  final bool isMobile;
 
   const _SectionWrapper({
     required this.title,
     required this.subtitle,
     required this.child,
+    required this.isMobile,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 24),
+      padding: EdgeInsets.symmetric(
+        vertical: isMobile ? 60 : 100,
+        horizontal: 24,
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1100),
         child: Column(
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              style: (isMobile
+                      ? Theme.of(context).textTheme.headlineSmall
+                      : Theme.of(context).textTheme.headlineMedium)
+                  ?.copyWith(
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF1E293B),
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               subtitle,
-              style: const TextStyle(color: Color(0xFF64748B), fontSize: 16),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: isMobile ? 14 : 16,
+              ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 64),
+            SizedBox(height: isMobile ? 40 : 64),
             child,
           ],
         ),
@@ -515,21 +559,21 @@ class _FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
-  final int delay;
 
   const _FeatureCard({
     required this.icon,
     required this.title,
     required this.description,
-    required this.delay,
   });
 
   @override
   Widget build(BuildContext context) {
     const atekerOrange = Color(0xFFD06E1A);
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width <= 800;
 
     return Container(
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.all(isMobile ? 24 : 40),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -541,12 +585,12 @@ class _FeatureCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: atekerOrange.withValues(alpha: 0.1),
+              color: atekerOrange.withAlpha(25),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: atekerOrange, size: 32),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: isMobile ? 20 : 32),
           Text(
             title,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
@@ -554,7 +598,7 @@ class _FeatureCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             description,
-            style: const TextStyle(color: Color(0xFF64748B), height: 1.6),
+            style: const TextStyle(color: Colors.black, height: 1.6),
           ),
         ],
       ),
@@ -569,22 +613,29 @@ class _StatBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: Color(0xFFD06E1A),
-            fontSize: 40,
-            fontWeight: FontWeight.w900,
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width <= 800;
+
+    return SizedBox(
+      width: isMobile ? 160 : null,
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFFD06E1A),
+              fontSize: 40,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white70, fontSize: 13),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 13),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -606,8 +657,11 @@ class _StepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width <= 800;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         Text(
           step,
@@ -630,7 +684,8 @@ class _StepCard extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           description,
-          style: const TextStyle(color: Color(0xFF64748B), height: 1.6),
+          style: const TextStyle(color: Colors.black, height: 1.6),
+          textAlign: isMobile ? TextAlign.center : TextAlign.start,
         ),
       ],
     );

@@ -282,33 +282,51 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // ── Build ──
   @override
   Widget build(BuildContext context) {
     final auth = context.read<AdminAuthService>();
+    final isDesktop = MediaQuery.of(context).size.width >= 800;
+
     return Scaffold(
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              backgroundColor: const Color(0xFF0F172A),
+              foregroundColor: Colors.white,
+              title: const Text('Dashboard', style: TextStyle(color: Colors.white)),
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+      drawer: isDesktop
+          ? null
+          : Drawer(
+              child: AdminSidebar(
+                selectedRoute: DashboardPage.routeName,
+                onSignOut: () => _confirmSignOut(context, auth),
+              ),
+            ),
       body: Row(
         children: [
-          AdminSidebar(
-            selectedRoute: DashboardPage.routeName,
-            onSignOut: () => _confirmSignOut(context, auth),
-          ),
-          Expanded(child: _buildMainContent(context)),
+          if (isDesktop)
+            AdminSidebar(
+              selectedRoute: DashboardPage.routeName,
+              onSignOut: () => _confirmSignOut(context, auth),
+            ),
+          Expanded(child: _buildMainContent(context, isDesktop)),
         ],
       ),
     );
   }
 
   // ── Main Content ──
-  Widget _buildMainContent(BuildContext context) {
+  Widget _buildMainContent(BuildContext context, bool isDesktop) {
     return ColoredBox(
       color: const Color(0xFFF8FAFC),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: _buildHeader(context)),
-          SliverToBoxAdapter(child: _buildStatsRow(context)),
-          SliverToBoxAdapter(child: _buildRecordingsCard(context)),
-          SliverToBoxAdapter(child: _buildUsersCard(context)),
+          SliverToBoxAdapter(child: _buildStatsRow(context, isDesktop)),
+          SliverToBoxAdapter(child: _buildRecordingsCard(context, isDesktop)),
+          SliverToBoxAdapter(child: _buildUsersCard(context, isDesktop)),
           const SliverToBoxAdapter(child: SizedBox(height: 48)),
         ],
       ),
@@ -332,7 +350,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const SizedBox(height: 6),
           Text(
             _formattedDate(),
-            style: const TextStyle(color: Color(0xFF64748B), fontSize: 15),
+            style: const TextStyle(color: Colors.black, fontSize: 15),
           ),
         ],
       ),
@@ -340,62 +358,81 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // ── Stats Row ──
-  Widget _buildStatsRow(BuildContext context) {
+  Widget _buildStatsRow(BuildContext context, bool isDesktop) {
     String _val(int? v) =>
         _statsLoading ? '' : (_statsError || v == null) ? '—' : '$v';
 
+    final statCards = [
+      _StatCard(
+        label: 'Total Users',
+        value: _val(_usersCount),
+        loading: _statsLoading,
+        icon: Icons.people_rounded,
+        color: const Color(0xFF6366F1),
+      ),
+      _StatCard(
+        label: 'Total Recordings',
+        value: _val(_recordingsCount),
+        loading: _statsLoading,
+        icon: Icons.mic_rounded,
+        color: AppColors.primary,
+      ),
+      _StatCard(
+        label: 'Text Prompts',
+        value: _val(_textPromptsCount),
+        loading: _statsLoading,
+        icon: Icons.text_snippet_rounded,
+        color: const Color(0xFF10B981),
+      ),
+      _StatCard(
+        label: 'Image Prompts',
+        value: _val(_imagePromptsCount),
+        loading: _statsLoading,
+        icon: Icons.image_rounded,
+        color: const Color(0xFF8B5CF6),
+      ),
+    ];
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(32, 0, 32, 28),
-      child: Row(
-        children: [
-          Expanded(
-            child: _StatCard(
-              label: 'Total Users',
-              value: _val(_usersCount),
-              loading: _statsLoading,
-              icon: Icons.people_rounded,
-              color: const Color(0xFF6366F1),
+      child: isDesktop
+          ? Row(
+              children: [
+                Expanded(child: statCards[0]),
+                const SizedBox(width: 16),
+                Expanded(child: statCards[1]),
+                const SizedBox(width: 16),
+                Expanded(child: statCards[2]),
+                const SizedBox(width: 16),
+                Expanded(child: statCards[3]),
+              ],
+            )
+          : Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: statCards[0]),
+                    const SizedBox(width: 16),
+                    Expanded(child: statCards[1]),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: statCards[2]),
+                    const SizedBox(width: 16),
+                    Expanded(child: statCards[3]),
+                  ],
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _StatCard(
-              label: 'Total Recordings',
-              value: _val(_recordingsCount),
-              loading: _statsLoading,
-              icon: Icons.mic_rounded,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _StatCard(
-              label: 'Text Prompts',
-              value: _val(_textPromptsCount),
-              loading: _statsLoading,
-              icon: Icons.text_snippet_rounded,
-              color: const Color(0xFF10B981),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _StatCard(
-              label: 'Image Prompts',
-              value: _val(_imagePromptsCount),
-              loading: _statsLoading,
-              icon: Icons.image_rounded,
-              color: const Color(0xFF8B5CF6),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
   // ── Recent Recordings Card ──
-  Widget _buildRecordingsCard(BuildContext context) {
+  Widget _buildRecordingsCard(BuildContext context, bool isDesktop) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+      padding: EdgeInsets.fromLTRB(isDesktop ? 32 : 16, 0, isDesktop ? 32 : 16, 24),
       child: _ContentCard(
         header: Row(
           children: [
@@ -425,21 +462,21 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: Center(
                       child: Text(
                         'No recordings found.',
-                        style: TextStyle(color: Color(0xFF94A3B8)),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   )
                 : Column(
                     children: List.generate(
                       _recordings.length,
-                      (i) => _buildRecordingRow(i, _recordings[i]),
+                      (i) => _buildRecordingRow(i, _recordings[i], isDesktop),
                     ),
                   ),
       ),
     );
   }
 
-  Widget _buildRecordingRow(int idx, Map<String, dynamic> rec) {
+  Widget _buildRecordingRow(int idx, Map<String, dynamic> rec, bool isDesktop) {
     final promptType = (rec['promptType'] as String? ?? 'speech').toLowerCase();
     final rawText = rec['promptText'] as String? ?? rec['prompt'] as String? ?? '—';
     final displayText = rawText.length > 60 ? '${rawText.substring(0, 60)}…' : rawText;
@@ -453,7 +490,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final isLast = idx == _recordings.length - 1;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 24 : 16, vertical: 14),
       decoration: BoxDecoration(
         border: isLast
             ? null
@@ -466,30 +503,44 @@ class _DashboardPageState extends State<DashboardPage> {
           // Type chip
           _TypeChip(label: isSpeech ? 'Speech' : 'Image', isSpeech: isSpeech),
           const SizedBox(width: 16),
-          // Prompt text
+          // Prompt text and potentially user/time
           Expanded(
-            child: Text(
-              displayText,
-              style: const TextStyle(color: Color(0xFF1E293B), fontSize: 13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayText,
+                  style: const TextStyle(color: Color(0xFF1E293B), fontSize: 13),
+                ),
+                if (!isDesktop) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '$userLabel • ${_timeAgo(uploadedAt)}',
+                    style: const TextStyle(color: Colors.black, fontSize: 11),
+                  ),
+                ],
+              ],
             ),
           ),
           const SizedBox(width: 16),
           // User
-          Text(
-            userLabel,
-            style: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
-          ),
-          const SizedBox(width: 16),
-          // Time ago
-          SizedBox(
-            width: 64,
-            child: Text(
-              _timeAgo(uploadedAt),
-              textAlign: TextAlign.end,
-              style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+          if (isDesktop) ...[
+            Text(
+              userLabel,
+              style: const TextStyle(color: Colors.black, fontSize: 12),
             ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 16),
+            // Time ago
+            SizedBox(
+              width: 64,
+              child: Text(
+                _timeAgo(uploadedAt),
+                textAlign: TextAlign.end,
+                style: const TextStyle(color: Colors.black, fontSize: 12),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
           // Inline player controls
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -536,9 +587,9 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // ── Recent Users Card ──
-  Widget _buildUsersCard(BuildContext context) {
+  Widget _buildUsersCard(BuildContext context, bool isDesktop) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+      padding: EdgeInsets.fromLTRB(isDesktop ? 32 : 16, 0, isDesktop ? 32 : 16, 24),
       child: _ContentCard(
         header: Text(
           'Recent Users',
@@ -558,21 +609,21 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: Center(
                       child: Text(
                         'No users found.',
-                        style: TextStyle(color: Color(0xFF94A3B8)),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   )
                 : Column(
                     children: List.generate(
                       _users.length,
-                      (i) => _buildUserRow(i, _users[i]),
+                      (i) => _buildUserRow(i, _users[i], isDesktop),
                     ),
                   ),
       ),
     );
   }
 
-  Widget _buildUserRow(int idx, Map<String, dynamic> user) {
+  Widget _buildUserRow(int idx, Map<String, dynamic> user, bool isDesktop) {
     final displayName = user['displayName'] as String? ?? 'Anonymous';
     final email = user['email'] as String? ?? '—';
     final lastSeen =
@@ -590,7 +641,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final isLast = idx == _users.length - 1;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 24 : 16, vertical: 14),
       decoration: BoxDecoration(
         border: isLast
             ? null
@@ -628,21 +679,30 @@ class _DashboardPageState extends State<DashboardPage> {
                 Text(
                   email,
                   style: const TextStyle(
-                    color: Color(0xFF64748B),
+                    color: Colors.black,
                     fontSize: 12,
                   ),
                 ),
+                if (!isDesktop && lastSeen != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Last seen ${_timeAgo(lastSeen)}',
+                    style: const TextStyle(color: Colors.black, fontSize: 11),
+                  ),
+                ],
               ],
             ),
           ),
-          Text(
-            lastSeen != null ? 'Last seen ${_timeAgo(lastSeen)}' : '—',
-            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
-          ),
-          const SizedBox(width: 16),
+          if (isDesktop) ...[
+            Text(
+              lastSeen != null ? 'Last seen ${_timeAgo(lastSeen)}' : '—',
+              style: const TextStyle(color: Colors.black, fontSize: 12),
+            ),
+            const SizedBox(width: 16),
+          ],
           _BadgeChip(
             label: isActive ? 'Active' : '—',
-            color: isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+            color: isActive ? const Color(0xFF10B981) : Colors.black,
           ),
         ],
       ),
@@ -698,7 +758,7 @@ class _StatCard extends StatelessWidget {
                 Text(
                   label,
                   style: const TextStyle(
-                    color: Color(0xFF64748B),
+                    color: Colors.black,
                     fontSize: 12,
                   ),
                 ),

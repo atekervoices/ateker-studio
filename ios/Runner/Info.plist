@@ -27,7 +27,7 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSMicrophoneUsageDescription</key>
-		<string>Allow Project Euphonia to record your voice</string>
+		<string>Allow Ateker Voices to record your voice</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

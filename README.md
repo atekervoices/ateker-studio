@@ -1,14 +1,14 @@
-# Project Euphonia App
+# Ateker Voices App
 
-This repository provides an open-source toolkit to build personalized speech recognition solutions, stemming from the broader [Project Euphonia](https://sites.research.google/euphonia/about/) initiative started by Google in 2019. This specific iteration focuses on enabling improved speech-to-text transcription, particularly for individuals with non-standard speech.
+This repository provides an open-source toolkit to build personalized speech recognition solutions, stemming from the broader [Ateker Voices](https://sites.research.google/ateker-voices/about/) initiative started by Google in 2019. This specific iteration focuses on enabling improved speech-to-text transcription, particularly for individuals with non-standard speech.
 
 ## Intended Use
 
-Project Euphonia App is a set of open-source toolkits intended for use by developers to create and customize speech recognition solutions. It provides tools and documentation for collecting speech data, fine-tuning open-source Automatic Speech Recognition (ASR) models, and deploying those models for speech-to-text transcription.The open-source toolkits, in its original form, is not intended to be used without modification for the diagnosis, treatment, mitigation, or prevention of any disease or medical condition. Developers are solely responsible for making substantial changes to Project Euphonia’s open-source toolkits and for ensuring that any applications they create comply with all applicable laws and regulations, including those related to medical devices.
+Ateker Voices App is a set of open-source toolkits intended for use by developers to create and customize speech recognition solutions. It provides tools and documentation for collecting speech data, fine-tuning open-source Automatic Speech Recognition (ASR) models, and deploying those models for speech-to-text transcription.The open-source toolkits, in its original form, is not intended to be used without modification for the diagnosis, treatment, mitigation, or prevention of any disease or medical condition. Developers are solely responsible for making substantial changes to Ateker Voices’s open-source toolkits and for ensuring that any applications they create comply with all applicable laws and regulations, including those related to medical devices.
 
 ### Indications for Use
 
-Project Euphonia’s open-source toolkits is intended to provide developers with the capability to:
+Ateker Voices’s open-source toolkits is intended to provide developers with the capability to:
 
 - Collect volunteered speech data using a customizable mobile application.
 - Fine-tune open-source Automatic Speech Recognition (ASR) models using provided training recipes and infrastructure.
@@ -17,7 +17,7 @@ Project Euphonia’s open-source toolkits is intended to provide developers with
 
 ### Toolkit Description
 
-Project Euphonia’s open-source toolkits are designed to facilitate the creation of customized speech recognition solutions. The toolkits consists of:
+Ateker Voices’s open-source toolkits are designed to facilitate the creation of customized speech recognition solutions. The toolkits consists of:
 
 - A **Flutter-based mobile application** for recording speech data and associating it with text phrases. The application stores data in a Firebase Storage instance controlled by the developer.
 - **Google Colab notebooks** providing example code and documentation for fine-tuning open-source Automatic Speech Recognition (ASR) models. The notebooks will help inform developers on the following topics: data preparation, model training, and performance evaluation.
@@ -28,8 +28,8 @@ Project Euphonia’s open-source toolkits are designed to facilitate the creatio
 Clone the repository:
 
 ```bash
-git clone https://github.com/google/project-euphonia-app
-cd project-euphonia-app
+git clone https://github.com/google/ateker-voices-app
+cd ateker-voices-app
 ```
 
 ### Flutter-based mobile application
@@ -70,7 +70,7 @@ For iOS: Run `cd ios` and `run pod install`. Make sure mobile-provisioning profi
 
 This component consists of a Google Colab notebook to run the training. The Notebook will train ASR an open source model to recognize the speech of the user that recorded the training phrases.
 
-Open the notebook in the [training_colabs](https://github.com/google/project-euphonia-app/tree/main/training_colabs) and follow the steps.
+Open the notebook in the [training_colabs](https://github.com/google/ateker-voices-app/tree/main/training_colabs) and follow the steps.
 
 ### Web service that performs speech-to-text
 
@@ -84,7 +84,7 @@ Deploy the web app into Google Cloud Run following steps reported in the [app RE
 
 ## Usage
 
-Following all [Setup](#setup) steps you installed the Project Euphonia App on your smartphone and the api on Google Cloud Run. You can now set the URL of the Google Cloud Run instance in the app Settings and start transcribing your speech.
+Following all [Setup](#setup) steps you installed the Ateker Voices App on your smartphone and the api on Google Cloud Run. You can now set the URL of the Google Cloud Run instance in the app Settings and start transcribing your speech.
 
 ## Localization (Internationalization)
 
@@ -103,7 +103,7 @@ Replace `COUNTRY_CODE` with the appropriate two-letter ISO 639-1 language code (
 
 ```json
 {
-    "appTitle": "Project Euphonia",
+    "appTitle": "Ateker Voices",
     "recordButtonTitle": "Registra"
 }
 ```

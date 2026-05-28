@@ -77,7 +77,7 @@ class ImagePromptView extends StatelessWidget {
                     return Container(
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       child: const Center(
-                        child: Icon(Icons.broken_image, size: 64, color: Colors.grey),
+                        child: Icon(Icons.broken_image, size: 64, color: Colors.black),
                       ),
                     );
                   },
@@ -89,7 +89,7 @@ class ImagePromptView extends StatelessWidget {
                     return Container(
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       child: const Center(
-                        child: Icon(Icons.broken_image, size: 64, color: Colors.grey),
+                        child: Icon(Icons.broken_image, size: 64, color: Colors.black),
                       ),
                     );
                   },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.project_euphonia
+package com.google.ateker_voices
 
 import io.flutter.embedding.android.FlutterActivity
 

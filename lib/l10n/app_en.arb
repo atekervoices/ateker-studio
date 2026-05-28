@@ -70,7 +70,7 @@
         "placeholders": {
             "transcriptionURL": {
                 "type": "String",
-                "example": "https://project-euphonia-inference-xyz.LOCATION.run.app"
+                "example": "https://ateker-voices-inference-xyz.LOCATION.run.app"
             }
         }
     },

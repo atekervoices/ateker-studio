@@ -19,13 +19,32 @@ class AdminGalleryPage extends StatefulWidget {
 class _AdminGalleryPageState extends State<AdminGalleryPage> {
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width >= 800;
+
     return Scaffold(
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              backgroundColor: const Color(0xFF0F172A),
+              foregroundColor: Colors.white,
+              title: const Text('Community Gallery', style: TextStyle(color: Colors.white)),
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+      drawer: isDesktop
+          ? null
+          : Drawer(
+              child: AdminSidebar(
+                selectedRoute: AdminGalleryPage.routeName,
+                onSignOut: () => _confirmSignOut(context),
+              ),
+            ),
       body: Row(
         children: [
-          AdminSidebar(
-            selectedRoute: AdminGalleryPage.routeName,
-            onSignOut: () => _confirmSignOut(context),
-          ),
+          if (isDesktop)
+            AdminSidebar(
+              selectedRoute: AdminGalleryPage.routeName,
+              onSignOut: () => _confirmSignOut(context),
+            ),
           Expanded(
             child: ColoredBox(
               color: const Color(0xFFF8FAFC),
@@ -59,7 +78,7 @@ class _AdminGalleryPageState extends State<AdminGalleryPage> {
                             const Text(
                               'Manage images shown on the public landing page.',
                               style: TextStyle(
-                                  color: Color(0xFF64748B), fontSize: 13),
+                                  color: Colors.black, fontSize: 13),
                             ),
                           ],
                         ),
@@ -91,7 +110,7 @@ class _AdminGalleryPageState extends State<AdminGalleryPage> {
                                 const SizedBox(height: 16),
                                 const Text('No images in the gallery yet.',
                                     style:
-                                        TextStyle(color: Color(0xFF64748B))),
+                                        TextStyle(color: Colors.black)),
                                 const SizedBox(height: 24),
                                 FilledButton(
                                   onPressed: () => _showUploadDialog(context),
@@ -104,8 +123,8 @@ class _AdminGalleryPageState extends State<AdminGalleryPage> {
                         return GridView.builder(
                           padding: const EdgeInsets.all(28),
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: isDesktop ? 3 : 1,
                             crossAxisSpacing: 20,
                             mainAxisSpacing: 20,
                             childAspectRatio: 0.85,
@@ -253,7 +272,7 @@ class __UploadDialogState extends State<_UploadDialog> {
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.cloud_upload_outlined, size: 40, color: Colors.grey),
+                      Icon(Icons.cloud_upload_outlined, size: 40, color: Colors.black),
                       SizedBox(height: 8),
                       Text('Click to select image'),
                     ],

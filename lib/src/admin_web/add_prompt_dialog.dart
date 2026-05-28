@@ -99,7 +99,7 @@ class _AddPromptDialogState extends State<AddPromptDialog> {
               const Text(
                 'Prompt Type',
                 style: TextStyle(
-                  color: Color(0xFF64748B),
+                  color: Colors.black,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -134,7 +134,7 @@ class _AddPromptDialogState extends State<AddPromptDialog> {
               const Text(
                 'Prompt Text',
                 style: TextStyle(
-                  color: Color(0xFF64748B),
+                  color: Colors.black,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -158,7 +158,7 @@ class _AddPromptDialogState extends State<AddPromptDialog> {
               const Text(
                 'Topic Category',
                 style: TextStyle(
-                  color: Color(0xFF64748B),
+                  color: Colors.black,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -202,7 +202,7 @@ class _AddPromptDialogState extends State<AddPromptDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+          child: const Text('Cancel', style: TextStyle(color: Colors.black)),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _submitForm,
@@ -238,7 +238,7 @@ class _AddPromptDialogState extends State<AddPromptDialog> {
           const SizedBox(height: 10),
           Text(
             _selectedImageFileName ?? 'image',
-            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
+            style: const TextStyle(color: Colors.black, fontSize: 12),
           ),
           const SizedBox(height: 12),
           Row(
@@ -365,7 +365,7 @@ class _AddPromptDialogState extends State<AddPromptDialog> {
             const Text(
               'Click to upload an image',
               style: TextStyle(
-                color: Color(0xFF475569),
+                color: Colors.black,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -526,14 +526,14 @@ class _KindToggleButton extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? _atekerOrange : Color(0xFF94A3B8),
+              color: isSelected ? _atekerOrange : Colors.black,
               size: 28,
             ),
             const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Color(0xFF1E293B) : Color(0xFF64748B),
+                color: isSelected ? Color(0xFF1E293B) : Colors.black,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
@@ -541,7 +541,7 @@ class _KindToggleButton extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10),
+              style: const TextStyle(color: Colors.black, fontSize: 10),
             ),
           ],
         ),

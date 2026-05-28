@@ -9,6 +9,8 @@ import 'admin_login_page.dart';
 import 'admin_prompts_page.dart';
 import 'dashboard_page.dart';
 import 'landing_page.dart';
+import 'datasets_page.dart';
+import 'about_page.dart';
 
 class AdminWebApp extends StatelessWidget {
   const AdminWebApp({super.key});
@@ -94,12 +96,12 @@ class AdminWebApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: atekerOrange, width: 2),
             ),
-            labelStyle: const TextStyle(color: Color(0xFF64748B)),
-            hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+            labelStyle: const TextStyle(color: Colors.black),
+            hintStyle: const TextStyle(color: Colors.black),
           ),
           tabBarTheme: const TabBarThemeData(
             labelColor: atekerOrange,
-            unselectedLabelColor: Color(0xFF64748B),
+            unselectedLabelColor: Colors.black,
             indicatorColor: atekerOrange,
             dividerColor: Colors.transparent,
             indicator: UnderlineTabIndicator(
@@ -116,6 +118,8 @@ class AdminWebApp extends StatelessWidget {
         initialRoute: LandingPage.routeName,
         routes: {
           LandingPage.routeName: (_) => const LandingPage(),
+          DatasetsPage.routeName: (_) => const DatasetsPage(),
+          AboutPage.routeName: (_) => const AboutPage(),
           AdminLoginPage.routeName: (_) => const AdminLoginPage(),
           DashboardPage.routeName: (_) => const _AdminGuard(child: DashboardPage()),
           AdminPromptsPage.routeName: (_) => const _AdminGuard(child: AdminPromptsPage()),

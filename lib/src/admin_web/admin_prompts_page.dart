@@ -53,14 +53,32 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
   @override
   Widget build(BuildContext context) {
     const atekerOrange = Color(0xFFD06E1A);
+    final isDesktop = MediaQuery.of(context).size.width >= 800;
 
     return Scaffold(
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              backgroundColor: const Color(0xFF0F172A),
+              foregroundColor: Colors.white,
+              title: const Text('Prompts', style: TextStyle(color: Colors.white)),
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+      drawer: isDesktop
+          ? null
+          : Drawer(
+              child: AdminSidebar(
+                selectedRoute: AdminPromptsPage.routeName,
+                onSignOut: () => _confirmSignOut(context),
+              ),
+            ),
       body: Row(
         children: [
-          AdminSidebar(
-            selectedRoute: AdminPromptsPage.routeName,
-            onSignOut: () => _confirmSignOut(context),
-          ),
+          if (isDesktop)
+            AdminSidebar(
+              selectedRoute: AdminPromptsPage.routeName,
+              onSignOut: () => _confirmSignOut(context),
+            ),
           Expanded(
             child: ColoredBox(
               color: const Color(0xFFF8FAFC),
@@ -97,7 +115,7 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
                                 const Text(
                                   'Manage the prompts shown to contributors in the mobile app.',
                                   style: TextStyle(
-                                      color: Color(0xFF64748B), fontSize: 13),
+                                      color: Colors.black, fontSize: 13),
                                 ),
                               ],
                             ),
@@ -139,7 +157,7 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
                                   const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
                                   const SizedBox(height: 16),
                                   Text(repository.error ?? 'Unknown error',
-                                      style: const TextStyle(color: Color(0xFF64748B))),
+                                      style: const TextStyle(color: Colors.black)),
                                   const SizedBox(height: 16),
                                   FilledButton(
                                     onPressed: () => repository.loadPrompts(),
@@ -155,7 +173,7 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
                             controller: _tabController,
                             children: [
                               _buildTextPromptsTab(context, textPrompts),
-                              _buildImagePromptsTab(context, imagePrompts),
+                              _buildImagePromptsTab(context, imagePrompts, isDesktop),
                             ],
                           );
                         },
@@ -215,7 +233,7 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
   }
 
   Widget _buildImagePromptsTab(
-      BuildContext context, List<AdminPromptItem> prompts) {
+      BuildContext context, List<AdminPromptItem> prompts, bool isDesktop) {
     if (prompts.isEmpty) {
       return _buildEmptyState(
         context,
@@ -242,8 +260,8 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
         const SizedBox(height: 20),
         Expanded(
           child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isDesktop ? 3 : 1,
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               childAspectRatio: 0.75,
@@ -305,7 +323,7 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF64748B),
+                        color: Colors.black,
                       ),
                 ),
               ],
@@ -342,19 +360,19 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64, color: Colors.grey.withAlpha(50)),
+          Icon(icon, size: 64, color: Colors.black.withAlpha(50)),
           const SizedBox(height: 16),
           Text(
             label,
             style: const TextStyle(
-                color: Color(0xFF475569),
+                color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
           Text(
             description,
-            style: const TextStyle(color: Color(0xFF94A3B8)),
+            style: const TextStyle(color: Colors.black),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -618,7 +636,7 @@ class _ImagePromptCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   prompt.text,
-                  style: const TextStyle(color: Color(0xFF475569), fontSize: 13),
+                  style: const TextStyle(color: Colors.black, fontSize: 13),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

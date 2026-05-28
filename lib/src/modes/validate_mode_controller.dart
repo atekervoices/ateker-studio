@@ -272,7 +272,7 @@ class _ValidateModeControllerState extends State<ValidateModeController> {
             SizedBox(height: 20),
             Text(
               'Loading recordings…',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(fontSize: 16, color: Colors.black),
             ),
           ],
         ),
@@ -316,7 +316,7 @@ class _ValidateModeControllerState extends State<ValidateModeController> {
                 Text(
                   repo.error!,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
@@ -362,7 +362,7 @@ class _ValidateModeControllerState extends State<ValidateModeController> {
             const SizedBox(height: 12),
             Text(
               'No recordings to validate right now.\nCheck back later.',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 16, color: Colors.black),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -489,7 +489,7 @@ class _ValidateModeControllerState extends State<ValidateModeController> {
                 Text(
                   'Anonymous recording · #$shortId',
                   style:
-                      TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                      TextStyle(fontSize: 13, color: Colors.black),
                 ),
               ],
             ),

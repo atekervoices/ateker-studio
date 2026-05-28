@@ -17,7 +17,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
-import 'src/project_euphonia.dart';
+import 'src/ateker_voices_app.dart';
 import 'src/repos/auth_repository.dart';
 import 'src/repos/audio_player.dart';
 import 'src/repos/audio_recorder.dart';
@@ -51,5 +51,5 @@ void main() async {
     ChangeNotifierProvider(create: (context) => AuthRepository()),
     ChangeNotifierProvider(create: (context) => ValidationRepository()),
 
-  ], child: const ProjectEuphonia()));
+  ], child: const AtekerVoicesApp()));
 }

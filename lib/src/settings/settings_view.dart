@@ -64,7 +64,7 @@ class SettingsView extends StatelessWidget {
           border: const OutlineInputBorder(),
           labelText: AppLocalizations.of(context)!.cloudRunTextFieldLabel,
           hintText: 'https://project-euphoina.us-west2.run.app',
-          hintStyle: const TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.black),
         ),
         onChanged: (newValue) {
           Provider.of<SettingsRepository>(context, listen: false)
