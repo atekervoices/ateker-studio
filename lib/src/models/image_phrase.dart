@@ -17,11 +17,11 @@ import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import '../repos/web_audio_cache.dart';
+import '../repos/ateker_storage_service.dart';
 
 class ImagePhrase {
   final int index;
@@ -48,38 +48,25 @@ class ImagePhrase {
   Future<void> downloadRecording() async {
     if (kIsWeb) return;
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    final storageRef = FirebaseStorage.instance.ref();
-    final audioRef = uid == null
-        ? storageRef.child('data/$index/image_recording.wav')
-        : storageRef.child('users/$uid/image_prompts/$index/image_recording.wav');
+    final objectPath = uid == null
+        ? 'data/$index/image_recording.wav'
+        : 'users/$uid/image_prompts/$index/image_recording.wav';
     final localAudioFile = File(await localRecordingPath);
-    final remoteData = await audioRef.getData();
-    if (remoteData == null || remoteData.isEmpty) {
-      throw FileSystemException('File doesn\'t exist', audioRef.fullPath);
+    final data = await AtekerStorageService.instance.downloadData(objectPath);
+    if (data.isEmpty) {
+      throw FileSystemException("File doesn't exist", objectPath);
     }
-    final List<int> data = (await audioRef.getData()) as List<int>;
     localAudioFile.writeAsBytesSync(data);
   }
 
   Future<void> uploadRecording() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    final storage = FirebaseStorage.instance;
-    storage.setMaxUploadRetryTime(const Duration(seconds: 5));
-    final storageRef = storage.ref();
-    final phraseRef = uid == null
-        ? storageRef.child('data/$index/image_description.txt')
-        : storageRef.child('users/$uid/image_prompts/$index/image_description.txt');
-    final audioRef = uid == null
-        ? storageRef.child('data/$index/image_recording.wav')
-        : storageRef.child('users/$uid/image_prompts/$index/image_recording.wav');
-
-    final metadata = SettableMetadata(customMetadata: {
-      'uid': uid ?? 'anonymous',
-      'promptType': 'image',
-      'promptIndex': '$index',
-      'promptText': text,
-      'recordedAt': DateTime.now().toUtc().toIso8601String(),
-    });
+    final phrasePath = uid == null
+        ? 'data/$index/image_description.txt'
+        : 'users/$uid/image_prompts/$index/image_description.txt';
+    final audioPath = uid == null
+        ? 'data/$index/image_recording.wav'
+        : 'users/$uid/image_prompts/$index/image_recording.wav';
 
     if (kIsWeb) {
       final blobUrl = WebAudioCache.getImageAudioUrl(index);
@@ -88,21 +75,18 @@ class ImagePhrase {
       }
       final response = await http.get(Uri.parse(blobUrl));
       await Future.wait([
-        phraseRef.putString(text),
-        audioRef.putData(response.bodyBytes, metadata),
+        AtekerStorageService.instance.uploadString(phrasePath, text),
+        AtekerStorageService.instance.uploadData(audioPath, response.bodyBytes, contentType: 'audio/wav'),
       ]);
     } else {
-      final audioPath = await localRecordingPath;
-      final localAudioFile = File(audioPath);
+      final audioPathLocal = await localRecordingPath;
+      final localAudioFile = File(audioPathLocal);
       if (!localAudioFile.existsSync()) {
-        throw FileSystemException('File doesn\'t exist', audioPath);
+        throw FileSystemException("File doesn't exist", audioPathLocal);
       }
       await Future.wait([
-        phraseRef.putString(text),
-        audioRef.putFile(
-          localAudioFile,
-          metadata,
-        ),
+        AtekerStorageService.instance.uploadString(phrasePath, text),
+        AtekerStorageService.instance.uploadFile(audioPath, localAudioFile, contentType: 'audio/wav'),
       ]);
     }
 

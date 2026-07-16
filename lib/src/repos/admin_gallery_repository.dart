@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'ateker_storage_service.dart';
 
 class GalleryImage {
   final String id;
@@ -29,7 +29,6 @@ class GalleryImage {
 
 class AdminGalleryRepository extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   List<GalleryImage> _images = [];
   List<GalleryImage> get images => _images;
@@ -70,9 +69,13 @@ class AdminGalleryRepository extends ChangeNotifier {
 
     try {
       // 1. Upload to Storage
-      final ref = _storage.ref().child('admin_gallery/$fileName');
-      final uploadTask = await ref.putData(imageData);
-      final url = await uploadTask.ref.getDownloadURL();
+      final objectPath = 'admin_gallery/$fileName';
+      await AtekerStorageService.instance.uploadData(
+        objectPath,
+        imageData,
+        contentType: 'image/jpeg',
+      );
+      final url = await AtekerStorageService.instance.getDownloadUrl(objectPath);
 
       // 2. Save to Firestore
       await _firestore.collection('admin_gallery').add({
@@ -95,13 +98,12 @@ class AdminGalleryRepository extends ChangeNotifier {
   Future<void> deleteImage(String id, String url) async {
     try {
       // 1. Delete from Storage
-      await _storage.refFromURL(url).delete();
+      await AtekerStorageService.instance.deleteObjectByUrl(url);
       
       // 2. Delete from Firestore
       await _firestore.collection('admin_gallery').doc(id).delete();
       
-      _images.removeWhere((img) => img.id == id);
-      notifyListeners();
+      await loadGallery();
     } catch (e) {
       _error = 'Failed to delete image: $e';
       notifyListeners();

@@ -18,10 +18,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'ateker_storage_service.dart';
 
 // ── Model ─────────────────────────────────────────────────────────────────────
 
@@ -81,7 +81,6 @@ class RecordingToValidate {
 final class ValidationRepository extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   final List<RecordingToValidate> _queue = [];
   bool _isLoading = false;
@@ -220,20 +219,6 @@ final class ValidationRepository extends ChangeNotifier {
   ///
   /// Throws on network/storage error or when Storage returns no data.
   Future<String> downloadAudio(String storagePath) async {
-    final ref = _storage.ref(storagePath);
-    if (kIsWeb) {
-      return await ref.getDownloadURL();
-    }
-
-    // 15 MB cap – more than enough for a short speech recording.
-    final data = await ref.getData(15 * 1024 * 1024);
-    if (data == null) {
-      throw Exception('Firebase Storage returned no data for: $storagePath');
-    }
-
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/validate_audio.wav');
-    await file.writeAsBytes(data, flush: true);
-    return file.path;
+    return await AtekerStorageService.instance.downloadAudioToTemp(storagePath);
   }
 }

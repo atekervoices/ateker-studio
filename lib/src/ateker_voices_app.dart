@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'generated/l10n/app_localizations.dart';
 import 'ui/core/themes/colors.dart';
@@ -23,14 +24,41 @@ class AtekerVoicesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lightBase = ThemeData(
+      colorScheme: AppColors.lightColorScheme,
+      brightness: Brightness.light,
+    );
+    final darkBase = ThemeData(
+      colorScheme: AppColors.darkColorScheme,
+      brightness: Brightness.dark,
+    );
+
+    final buttonStyle = FilledButton.styleFrom(
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      minimumSize: const Size(80, 40),
+    );
+    final outlineStyle = OutlinedButton.styleFrom(
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      minimumSize: const Size(80, 40),
+      side: BorderSide(color: AppColors.secondary, width: 1.5),
+    );
+
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(colorScheme: AppColors.lightColorScheme).copyWith(
+        theme: lightBase.copyWith(
+            textTheme: GoogleFonts.outfitTextTheme(lightBase.textTheme),
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                backgroundColor: Colors.grey.shade200)),
-        darkTheme: ThemeData(colorScheme: AppColors.darkColorScheme).copyWith(
+                backgroundColor: Colors.grey.shade200),
+            filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
+            outlinedButtonTheme: OutlinedButtonThemeData(style: outlineStyle)),
+        darkTheme: darkBase.copyWith(
+            textTheme: GoogleFonts.outfitTextTheme(darkBase.textTheme),
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                backgroundColor: Colors.grey.shade900)),
+                backgroundColor: Colors.grey.shade900),
+            filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
+            outlinedButtonTheme: OutlinedButtonThemeData(style: outlineStyle)),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const SplashScreen());

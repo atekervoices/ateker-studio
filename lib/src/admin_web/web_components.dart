@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../repos/admin_auth_service.dart';
-import 'admin_login_page.dart';
 
 class WebNavBar extends StatelessWidget implements PreferredSizeWidget {
   final String currentRoute;
@@ -28,7 +27,7 @@ class WebNavBar extends StatelessWidget implements PreferredSizeWidget {
           child: GestureDetector(
             onTap: () {
               if (currentRoute != route) {
-                Navigator.pushNamed(context, route);
+                Navigator.pushReplacementNamed(context, route);
               }
             },
             child: Column(
@@ -78,7 +77,7 @@ class WebNavBar extends StatelessWidget implements PreferredSizeWidget {
         child: GestureDetector(
           onTap: () {
             if (currentRoute != '/') {
-              Navigator.pushNamed(context, '/');
+              Navigator.pushReplacementNamed(context, '/');
             }
           },
           child: Row(
@@ -126,7 +125,7 @@ class WebNavBar extends StatelessWidget implements PreferredSizeWidget {
                     onPressed: () async {
                       await auth.signOut();
                       if (context.mounted) {
-                        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                        Navigator.pushReplacementNamed(context, '/');
                       }
                     },
                     icon: const Icon(Icons.logout, size: 20, color: Colors.redAccent),
@@ -136,26 +135,7 @@ class WebNavBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
               );
             } else {
-              return Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: FilledButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, AdminLoginPage.routeName);
-                  },
-                  icon: const Icon(Icons.login, size: 16),
-                  label: Text(isMobile ? 'Login' : 'Admin Login'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: atekerOrange,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isMobile ? 12 : 20,
-                      vertical: 10,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              );
+              return const SizedBox.shrink();
             }
           },
         ),
@@ -197,7 +177,7 @@ class WebDrawer extends StatelessWidget {
         onTap: () {
           Navigator.pop(context); // Close drawer first
           if (currentRoute != route) {
-            Navigator.pushNamed(context, route);
+            Navigator.pushReplacementNamed(context, route);
           }
         },
       );
@@ -273,7 +253,7 @@ class WebDrawer extends StatelessWidget {
                             onPressed: () async {
                               await auth.signOut();
                               if (context.mounted) {
-                                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                                Navigator.pushReplacementNamed(context, '/');
                               }
                             },
                             icon: const Icon(Icons.logout, size: 16),
@@ -315,7 +295,7 @@ class WebFooter extends StatelessWidget {
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, route);
+              Navigator.pushReplacementNamed(context, route);
             },
             child: Text(
               label,

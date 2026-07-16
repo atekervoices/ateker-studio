@@ -24,11 +24,7 @@ class AboutPage extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80, horizontal: 24),
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8FAFC), Colors.white],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                color: Color(0xFFF8FAFC),
               ),
               child: Center(
                 child: ConstrainedBox(
@@ -91,11 +87,7 @@ class AboutPage extends StatelessWidget {
                         imageWidget: Container(
                           height: 240,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFD06E1A), Color(0xFF6B2A05)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            color: const Color(0xFFD06E1A),
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: const Center(
@@ -114,11 +106,7 @@ class AboutPage extends StatelessWidget {
                         imageWidget: Container(
                           height: 240,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF08505A), Color(0xFF0F172A)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            color: const Color(0xFF6B2A05),
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: const Center(
@@ -197,6 +185,57 @@ class AboutPage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+                        ],
+                      ),
+                      SizedBox(height: isMobile ? 60 : 100),
+
+                      // Section: Meet the Team
+                      Column(
+                        children: [
+                          Text(
+                            'Meet the Team',
+                            style: TextStyle(
+                              fontSize: isMobile ? 24 : 32,
+                              fontWeight: FontWeight.bold,
+                              color: darkSlate,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'The passionate individuals driving the Ateker Voices initiative.',
+                            style: TextStyle(color: Colors.black),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 48),
+                          Card(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              side: BorderSide(color: Colors.grey.withAlpha(40)),
+                            ),
+                            color: Colors.white,
+                            child: Padding(
+                              padding: EdgeInsets.all(isMobile ? 24 : 40),
+                              child: isMobile
+                                  ? Column(
+                                      children: [
+                                        _buildTeamImage(),
+                                        const SizedBox(height: 24),
+                                        _buildTeamDetails(isMobile, atekerOrange),
+                                      ],
+                                    )
+                                  : Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _buildTeamImage(),
+                                        const SizedBox(width: 48),
+                                        Expanded(
+                                          child: _buildTeamDetails(isMobile, atekerOrange),
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: isMobile ? 60 : 100),
@@ -366,6 +405,95 @@ class AboutPage extends StatelessWidget {
             style: const TextStyle(color: Colors.black, fontSize: 13, height: 1.5),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTeamImage() {
+    return Container(
+      width: 180,
+      height: 180,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFD06E1A), width: 3),
+        image: const DecorationImage(
+          image: AssetImage('assets/images/simon.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTeamDetails(bool isMobile, Color themeColor) {
+    return Column(
+      crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Simon',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'ML Researcher - Makerere University Centre for Artificial Intelligence (MAK-AI)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: themeColor,
+          ),
+          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Simon is a researcher at the MAK-AI Center, focusing on Computer Vision and NLP.',
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black87,
+            height: 1.5,
+          ),
+          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+        ),
+        const SizedBox(height: 20),
+        const Text(
+          'Interests:',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+          children: [
+            _buildInterestChip('Voice AI for low-resource African languages.'),
+            _buildInterestChip('AI for Social good'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInterestChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 13,
+          color: Color(0xFF334155),
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

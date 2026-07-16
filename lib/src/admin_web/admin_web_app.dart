@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../repos/admin_auth_service.dart';
 import '../repos/admin_gallery_repository.dart';
@@ -34,6 +35,7 @@ class AdminWebApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
+          textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme),
           colorScheme: ColorScheme.fromSeed(
             seedColor: atekerOrange,
             brightness: Brightness.light,
@@ -66,19 +68,20 @@ class AdminWebApp extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: atekerOrange,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              minimumSize: const Size(80, 40),
             ),
           ),
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
               foregroundColor: atekerOrange,
-              side: const BorderSide(color: atekerOrange),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              side: const BorderSide(color: atekerOrange, width: 1.5),
+              textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              minimumSize: const Size(80, 40),
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
@@ -116,21 +119,66 @@ class AdminWebApp extends StatelessWidget {
           ),
         ),
         initialRoute: LandingPage.routeName,
-        routes: {
-          LandingPage.routeName: (_) => const LandingPage(),
-          DatasetsPage.routeName: (_) => const DatasetsPage(),
-          AboutPage.routeName: (_) => const AboutPage(),
-          AdminLoginPage.routeName: (_) => const AdminLoginPage(),
-          DashboardPage.routeName: (_) => const _AdminGuard(child: DashboardPage()),
-          AdminPromptsPage.routeName: (_) => const _AdminGuard(child: AdminPromptsPage()),
-          AdminGalleryPage.routeName: (_) => const _AdminGuard(child: AdminGalleryPage()),
+        onGenerateRoute: (settings) {
+          Widget buildWidget(BuildContext context) {
+            switch (settings.name) {
+              case LandingPage.routeName:
+                return const LandingPage();
+              case DatasetsPage.routeName:
+                return const DatasetsPage();
+              case AboutPage.routeName:
+                return const AboutPage();
+              case AdminLoginPage.routeName:
+                return const AdminLoginPage();
+              case DashboardPage.routeName:
+                return const _AdminGuard(child: DashboardPage());
+              case AdminPromptsPage.routeName:
+                return const _AdminGuard(child: AdminPromptsPage());
+              case AdminGalleryPage.routeName:
+                return const _AdminGuard(child: AdminGalleryPage());
+              default:
+                return const LandingPage();
+            }
+          }
+          return _AnimatedRoute(
+            child: Builder(builder: buildWidget),
+            settings: settings,
+          );
         },
       ),
     );
   }
 }
 
-/// A guard that redirects to login if the user is not an authenticated admin.
+
+
+/// Smooth animated route that fades and slightly slides the new page in.
+class _AnimatedRoute<T> extends PageRouteBuilder<T> {
+  final Widget child;
+
+  _AnimatedRoute({required this.child, super.settings})
+      : super(
+          transitionDuration: const Duration(milliseconds: 250),
+          reverseTransitionDuration: const Duration(milliseconds: 200),
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOutCubic,
+            );
+            return FadeTransition(
+              opacity: curved,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.04),
+                  end: Offset.zero,
+                ).animate(curved),
+                child: child,
+              ),
+            );
+          },
+        );
+}/// A guard that redirects to login if the user is not an authenticated admin.
 class _AdminGuard extends StatelessWidget {
   final Widget child;
   const _AdminGuard({required this.child});

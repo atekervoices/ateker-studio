@@ -21,6 +21,7 @@ import '../repos/admin_prompts_repository.dart';
 import 'add_prompt_dialog.dart';
 import 'admin_login_page.dart';
 import 'admin_sidebar.dart';
+import 'csv_bulk_upload_dialog.dart';
 
 class AdminPromptsPage extends StatefulWidget {
   const AdminPromptsPage({super.key});
@@ -120,10 +121,25 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
                               ],
                             ),
                             const Spacer(),
-                            FilledButton.icon(
-                              onPressed: () => _showAddPromptDialog(context),
-                              icon: const Icon(Icons.add),
-                              label: const Text('Add Prompt'),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                OutlinedButton.icon(
+                                  onPressed: () => _showBulkUploadDialog(context),
+                                  icon: const Icon(Icons.upload_file_rounded),
+                                  label: const Text('Bulk Upload (CSV)'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: atekerOrange,
+                                    side: const BorderSide(color: atekerOrange),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                FilledButton.icon(
+                                  onPressed: () => _showAddPromptDialog(context),
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('Add Prompt'),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -390,6 +406,13 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
     showDialog(
       context: context,
       builder: (context) => AddPromptDialog(initialKind: initialKind),
+    );
+  }
+
+  void _showBulkUploadDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => const CsvBulkUploadDialog(),
     );
   }
 

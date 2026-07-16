@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import '../repos/ateker_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -199,7 +199,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     try {
-      final url = await FirebaseStorage.instance.ref(path).getDownloadURL();
+      final url = await AtekerStorageService.instance.getDownloadUrl(path);
       if (!mounted) return;
 
       final controller =

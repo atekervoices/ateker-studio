@@ -24,7 +24,7 @@ abstract final class AppColors {
   static const grey3 = Color(0xFFA4A4A4);
 
   static const primary = Color(0xFFD06E1A);
-  static const secondary = Color(0xFF08505A);
+  static const secondary = Color(0xFF6B2A05);
   static const tertiary = Color(0xFF6B2A05);
   static const whiteTransparent = Color(
     0x4DFFFFFF,

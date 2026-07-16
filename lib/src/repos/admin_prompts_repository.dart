@@ -18,14 +18,12 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
 import '../models/image_prompt.dart';
+import 'ateker_storage_service.dart';
 
 class AdminPromptsRepository extends ChangeNotifier {
   late final FirebaseFirestore _firestore;
-  late final FirebaseStorage _storage;
   late final FirebaseAuth _auth;
 
   static const String _promptsCollection = 'admin_prompts';
@@ -43,7 +41,6 @@ class AdminPromptsRepository extends ChangeNotifier {
 
   AdminPromptsRepository() {
     _firestore = FirebaseFirestore.instance;
-    _storage = FirebaseStorage.instance;
     _auth = FirebaseAuth.instance;
   }
 
@@ -124,6 +121,56 @@ class AdminPromptsRepository extends ChangeNotifier {
     } catch (e) {
       developer.log('Error adding prompt: $e');
       _error = 'Failed to add prompt: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addPromptsBatch(List<AdminPromptItem> newPrompts) async {
+    if (newPrompts.isEmpty) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final batch = _firestore.batch();
+      final List<AdminPromptItem> savedPrompts = [];
+
+      for (final prompt in newPrompts) {
+        final docRef = _firestore.collection(_promptsCollection).doc();
+        
+        final savedPrompt = AdminPromptItem(
+          id: docRef.id,
+          kind: prompt.kind,
+          text: prompt.text,
+          topic: prompt.topic,
+          imageUrl: prompt.imageUrl,
+          imageFileName: prompt.imageFileName.isNotEmpty
+              ? prompt.imageFileName
+              : 'prompt_${docRef.id}.jpg',
+          createdAt: DateTime.now(),
+          createdBy: uid,
+        );
+
+        batch.set(docRef, savedPrompt.toFirestore());
+        savedPrompts.add(savedPrompt);
+      }
+
+      await batch.commit();
+
+      _prompts.insertAll(0, savedPrompts);
+      _error = null;
+    } catch (e) {
+      developer.log('Error batch adding prompts: $e');
+      _error = 'Failed to upload prompts: $e';
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -212,31 +259,22 @@ class AdminPromptsRepository extends ChangeNotifier {
       throw Exception('User not authenticated');
     }
 
-    final storageRef = _storage.ref();
-    final fileRef = storageRef.child('$_promptImagesFolder/$uid/$fileName');
-
-    final uploadTask = await fileRef.putData(
+    final objectPath = '$_promptImagesFolder/$uid/$fileName';
+    await AtekerStorageService.instance.uploadData(
+      objectPath,
       imageData,
-      SettableMetadata(
-        contentType: 'image/jpeg',
-        customMetadata: {
-          'uploadedBy': uid,
-          'uploadedAt': DateTime.now().toUtc().toIso8601String(),
-        },
-      ),
+      contentType: 'image/jpeg',
     );
 
-    return await fileRef.getDownloadURL();
+    return await AtekerStorageService.instance.getDownloadUrl(objectPath);
   }
 
   Future<void> deleteImage(String imageFileName) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid != null) {
-        final storageRef = _storage.ref();
-        final fileRef =
-            storageRef.child('$_promptImagesFolder/$uid/$imageFileName');
-        await fileRef.delete();
+        final objectPath = '$_promptImagesFolder/$uid/$imageFileName';
+        await AtekerStorageService.instance.deleteObject(objectPath);
       }
     } catch (e) {
       developer.log('Error deleting image: $e');
