@@ -26,7 +26,7 @@ abstract final class AtekerStorageConfig {
     return 'localhost';
   }
 
-  static const int port = 9800; // Unique port requested by user
+  static const int port = 9900; // Unique port to avoid conflicts
   static const String accessKey = 'minioadmin';
   static const String secretKey = 'minioadmin';
   static const bool useSSL = false;
