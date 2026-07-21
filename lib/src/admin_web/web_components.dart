@@ -158,7 +158,7 @@ class WebDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const atekerOrange = Color(0xFFD06E1A);
-    const darkSlate = Color(0xFF0F172A);
+    const darkSlate = Color(0xFF1A1C23);
 
     Widget drawerItem(String label, IconData icon, String route) {
       final isSelected = currentRoute == route;
@@ -312,7 +312,7 @@ class WebFooter extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 24),
-      color: const Color(0xFF0F172A),
+      color: const Color(0xFF1A1C23),
       width: double.infinity,
       child: Center(
         child: ConstrainedBox(

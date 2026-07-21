@@ -440,7 +440,7 @@ class _CsvBulkUploadDialogState extends State<CsvBulkUploadDialog> {
         children: [
           const Text(
             'Expected CSV Structure:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF0F172A)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF1A1C23)),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -455,14 +455,14 @@ class _CsvBulkUploadDialogState extends State<CsvBulkUploadDialog> {
           const SizedBox(height: 12),
           const Text(
             'Example CSV Rows:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF0F172A)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF1A1C23)),
           ),
           const SizedBox(height: 6),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
+              color: const Color(0xFF1A1C23),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const SelectableText(

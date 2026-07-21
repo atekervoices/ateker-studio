@@ -291,7 +291,7 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: isDesktop
           ? null
           : AppBar(
-              backgroundColor: const Color(0xFF0F172A),
+              backgroundColor: const Color(0xFF1A1C23),
               foregroundColor: Colors.white,
               title: const Text('Dashboard', style: TextStyle(color: Colors.white)),
               iconTheme: const IconThemeData(color: Colors.white),

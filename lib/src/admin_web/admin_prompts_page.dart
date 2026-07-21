@@ -60,7 +60,7 @@ class _AdminPromptsPageState extends State<AdminPromptsPage>
       appBar: isDesktop
           ? null
           : AppBar(
-              backgroundColor: const Color(0xFF0F172A),
+              backgroundColor: const Color(0xFF1A1C23),
               foregroundColor: Colors.white,
               title: const Text('Prompts', style: TextStyle(color: Colors.white)),
               iconTheme: const IconThemeData(color: Colors.white),

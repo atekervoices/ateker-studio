@@ -25,7 +25,7 @@ class _AdminGalleryPageState extends State<AdminGalleryPage> {
       appBar: isDesktop
           ? null
           : AppBar(
-              backgroundColor: const Color(0xFF0F172A),
+              backgroundColor: const Color(0xFF1A1C23),
               foregroundColor: Colors.white,
               title: const Text('Community Gallery', style: TextStyle(color: Colors.white)),
               iconTheme: const IconThemeData(color: Colors.white),

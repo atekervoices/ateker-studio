@@ -88,7 +88,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
     final theme = Theme.of(context);
     final width = MediaQuery.of(context).size.width;
     final isMobile = width <= 1000;
-    const darkSlate = Color(0xFF0F172A);
+    const darkSlate = Color(0xFF1A1C23);
 
     return Scaffold(
       appBar: const WebNavBar(currentRoute: '/'),
@@ -267,7 +267,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
   Widget _buildHeroContent(BuildContext context, {required bool isMobile}) {
     final theme = Theme.of(context);
     const atekerOrange = Color(0xFFD97706);
-    const darkSlate = Color(0xFF0F172A);
+    const darkSlate = Color(0xFF1A1C23);
 
     return Column(
       crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,

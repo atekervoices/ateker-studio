@@ -26,7 +26,7 @@ class AdminSidebar extends StatelessWidget {
     return SizedBox(
       width: 220,
       child: ColoredBox(
-        color: const Color(0xFF0F172A),
+        color: const Color(0xFF1A1C23),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

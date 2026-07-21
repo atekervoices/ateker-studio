@@ -268,7 +268,7 @@ class _DatasetsPageState extends State<DatasetsPage> with TickerProviderStateMix
 
             // ── Grid Stats Row ──
             Container(
-              color: const Color(0xFF0F172A),
+              color: const Color(0xFF1A1C23),
               padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
               width: double.infinity,
               child: Center(
